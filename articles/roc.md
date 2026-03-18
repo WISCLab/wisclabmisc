@@ -366,7 +366,7 @@ pROC::coords(r) |>
 ```
 
 wisclabmisc provides
-[`compute_empirical_roc()`](https://www.tjmahr.com/wisclabmisc/reference/compute_empirical_roc.md)
+[`compute_empirical_roc()`](https://wisclab.github.io/wisclabmisc/reference/compute_empirical_roc.md)
 which combines results from
 [`pROC::roc()`](https://rdrr.io/pkg/pROC/man/roc.html) and
 [`pROC::coords()`](https://rdrr.io/pkg/pROC/man/coords.html) into a
@@ -386,7 +386,7 @@ compute_empirical_roc(data, outcome, s100b)
 
 We can still see the messages emitted by the
 [`pROC::roc()`](https://rdrr.io/pkg/pROC/man/roc.html) call when we use
-[`compute_empirical_roc()`](https://www.tjmahr.com/wisclabmisc/reference/compute_empirical_roc.md).
+[`compute_empirical_roc()`](https://wisclab.github.io/wisclabmisc/reference/compute_empirical_roc.md).
 We can pass the arguments `direction` and `levels` to
 [`pROC::roc()`](https://rdrr.io/pkg/pROC/man/roc.html) to silence these
 messages.
@@ -498,7 +498,7 @@ p_best
 
 [`pROC::roc()`](https://rdrr.io/pkg/pROC/man/roc.html) does not support
 observation weights, so this package provides
-[`compute_sens_spec_from_ecdf()`](https://www.tjmahr.com/wisclabmisc/reference/compute_sens_spec_from_ecdf.md)
+[`compute_sens_spec_from_ecdf()`](https://wisclab.github.io/wisclabmisc/reference/compute_sens_spec_from_ecdf.md)
 to compute sensitivity and specificity using (weighted) ECDFs. If not
 weights are provided, the normal unweighted results are used. This
 function does not use
@@ -736,7 +736,7 @@ mean(fitted_sensitivities - sens_gt)
 Because the `<` direction better matched the ROC results, we conclude
 that the sensitivities follow the same order as the densities.
 
-[`compute_smooth_density_roc()`](https://www.tjmahr.com/wisclabmisc/reference/compute_smooth_density_roc.md)
+[`compute_smooth_density_roc()`](https://wisclab.github.io/wisclabmisc/reference/compute_smooth_density_roc.md)
 uses a similar heuristic to determine the order of the ROC coordinates
 with respect to the original densities. As a result, we can map the
 original threshold values to sensitivity and specificity values. The
@@ -768,7 +768,7 @@ data_smooth
 #> #   .is_best_closest_topleft <lgl>
 ```
 
-[`compute_smooth_density_roc()`](https://www.tjmahr.com/wisclabmisc/reference/compute_smooth_density_roc.md)
+[`compute_smooth_density_roc()`](https://wisclab.github.io/wisclabmisc/reference/compute_smooth_density_roc.md)
 also provides coordinates for the “best” thresholds by the Youden or
 topleft criteria. Because of the consistency between the two functions,
 we can just replace the data used to make annotated ROC curve with the

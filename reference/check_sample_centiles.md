@@ -17,4 +17,4 @@ check_sample_centiles(
 ## Details
 
 `check_sample_centiles()` was renamed to
-[`check_model_centiles()`](https://www.tjmahr.com/wisclabmisc/reference/check_model_centiles.md).
+[`check_model_centiles()`](https://wisclab.github.io/wisclabmisc/reference/check_model_centiles.md).

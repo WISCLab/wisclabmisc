@@ -8,7 +8,7 @@ centiles (percentile curves) from models easiers.
 
 ## A `gamlss()` that remembers the data
 
-[`mem_gamlss()`](https://www.tjmahr.com/wisclabmisc/reference/mem_gamlss.md)
+[`mem_gamlss()`](https://wisclab.github.io/wisclabmisc/reference/mem_gamlss.md)
 (memory gamlss) provides a drop-in replacement for the
 [`gamlss()`](https://rdrr.io/pkg/gamlss/man/gamlss.html) function.
 
@@ -24,7 +24,7 @@ model <- mem_gamlss(distance ~ age, data = data)
 ```
 
 The only difference between
-[`mem_gamlss()`](https://www.tjmahr.com/wisclabmisc/reference/mem_gamlss.md)
+[`mem_gamlss()`](https://wisclab.github.io/wisclabmisc/reference/mem_gamlss.md)
 and [`gamlss()`](https://rdrr.io/pkg/gamlss/man/gamlss.html) is that the
 modified version includes a bundle of data in `.user` that records the
 original dataset, session information and the call used to fit the
@@ -83,11 +83,11 @@ percentiles over age.)
 ## Centile prediction and tidying
 
 This package provides
-[`predict_centiles()`](https://www.tjmahr.com/wisclabmisc/reference/predict_centiles.md)
+[`predict_centiles()`](https://wisclab.github.io/wisclabmisc/reference/predict_centiles.md)
 as a streamlined version of the above code, but:
 
 - assumes the model was fitted with
-  [`mem_gamlss()`](https://www.tjmahr.com/wisclabmisc/reference/mem_gamlss.md)
+  [`mem_gamlss()`](https://wisclab.github.io/wisclabmisc/reference/mem_gamlss.md)
 - returns a tibble
 - keeps the predictor name (here, `age` instead of `x`)
 - prefixes the centiles with `q` (for quantile)
@@ -110,7 +110,7 @@ centiles
 
 Those predicted centiles are in wide format. We can tidy them into a
 long format with
-[`pivot_centiles_longer()`](https://www.tjmahr.com/wisclabmisc/reference/predict_centiles.md).
+[`pivot_centiles_longer()`](https://wisclab.github.io/wisclabmisc/reference/predict_centiles.md).
 This also includes `.pair` column that helps mark commonly paired
 quantiles 25:75, 10:90, and 5:95.
 
@@ -138,7 +138,7 @@ pivot_centiles_longer(centiles)
 Half of the data should be above the 50% centile line and half should be
 below the 50% centile line. The same holds for the other centile lines.
 This
-[`check_model_centiles()`](https://www.tjmahr.com/wisclabmisc/reference/check_model_centiles.md)
+[`check_model_centiles()`](https://wisclab.github.io/wisclabmisc/reference/check_model_centiles.md)
 performs this check by computing the percentages of observations less
 than or equal to each centile line.
 

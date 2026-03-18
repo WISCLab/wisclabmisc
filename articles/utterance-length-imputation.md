@@ -6,9 +6,9 @@ library(tidyverse)
 ```
 
 In this article, I describe the background of the
-[`impute_values_by_length()`](https://www.tjmahr.com/wisclabmisc/reference/impute_values_by_length.md)
+[`impute_values_by_length()`](https://wisclab.github.io/wisclabmisc/reference/impute_values_by_length.md)
 and
-[`weight_lengths_with_ordinal_model()`](https://www.tjmahr.com/wisclabmisc/reference/weight_lengths_with_ordinal_model.md)
+[`weight_lengths_with_ordinal_model()`](https://wisclab.github.io/wisclabmisc/reference/weight_lengths_with_ordinal_model.md)
 functions in our work and demonstrate their use. Each of these functions
 had been used in different projects (for example, intelligibility and
 then later articulation rate), and I had been copying and tweaking the
@@ -571,7 +571,7 @@ data_means_wide_1
 ```
 
 We can automate the joining step. Our
-[`weight_lengths_with_ordinal_model()`](https://www.tjmahr.com/wisclabmisc/reference/weight_lengths_with_ordinal_model.md)
+[`weight_lengths_with_ordinal_model()`](https://wisclab.github.io/wisclabmisc/reference/weight_lengths_with_ordinal_model.md)
 takes an optional `data_join` argument specifying a dataframe that the
 estimated weights should be joined onto. This argument is intended for
 the dataframe of imputed values. We cannot pass in the imputed values as
@@ -676,7 +676,7 @@ ggplot(data_means_wide_2) +
 
 ### Using a function for `data_train`
 
-[`weight_lengths_with_ordinal_model()`](https://www.tjmahr.com/wisclabmisc/reference/weight_lengths_with_ordinal_model.md)
+[`weight_lengths_with_ordinal_model()`](https://wisclab.github.io/wisclabmisc/reference/weight_lengths_with_ordinal_model.md)
 also supports providing a function for `data_train`. In this case, the
 function is applied to `data_join`. Here is how we would train the
 weights on the observed values in the imputation dataframe.

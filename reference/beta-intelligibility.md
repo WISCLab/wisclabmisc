@@ -6,7 +6,7 @@ regression model (via
 [`gamlss.dist::BE()`](https://rdrr.io/pkg/gamlss.dist/man/BE.html)) with
 natural cubic splines on the mean (mu) and scale (sigma). This model is
 fitted using this package's
-[`mem_gamlss()`](https://www.tjmahr.com/wisclabmisc/reference/mem_gamlss.md)
+[`mem_gamlss()`](https://wisclab.github.io/wisclabmisc/reference/mem_gamlss.md)
 wrapper function.
 
 ## Usage
@@ -104,7 +104,7 @@ Associated article: <https://doi.org/10.1044/2021_JSLHR-21-00142>
 ## Value
 
 for `fit_beta_gamlss()` and `fit_beta_gamlss_se()`, a
-[`mem_gamlss()`](https://www.tjmahr.com/wisclabmisc/reference/mem_gamlss.md)-fitted
+[`mem_gamlss()`](https://wisclab.github.io/wisclabmisc/reference/mem_gamlss.md)-fitted
 model. The `.user` data in the model includes degrees of freedom for
 each parameter and the
 [`splines::ns()`](https://rdrr.io/r/splines/ns.html) basis for each
@@ -131,7 +131,7 @@ several models using parallel computing with
 [`furrr::future_map()`](https://furrr.futureverse.org/reference/future_map.html)
 (as when using bootstrap resampling).
 
-[`predict_centiles()`](https://www.tjmahr.com/wisclabmisc/reference/predict_centiles.md)
+[`predict_centiles()`](https://wisclab.github.io/wisclabmisc/reference/predict_centiles.md)
 will work with this function, but it will likely throw a warning
 message. Therefore, `predict_beta_gamlss()` provides an alternative way
 to compute centiles from the model. This function manually computes the

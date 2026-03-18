@@ -29,7 +29,7 @@ check_computed_centiles(data, var_y)
 - model:
 
   a gamlss model prepared by
-  [`mem_gamlss()`](https://www.tjmahr.com/wisclabmisc/reference/mem_gamlss.md)
+  [`mem_gamlss()`](https://wisclab.github.io/wisclabmisc/reference/mem_gamlss.md)
 
 - var_x, var_y:
 

@@ -63,7 +63,6 @@ data_bootstraps <- data_tree_ids %>%
       validate = TRUE
     )
   )
-#> Warning: Some assessment sets contained zero rows.
 
 data_bootstraps
 #> # A tibble: 20 × 3
@@ -71,22 +70,22 @@ data_bootstraps
 #>    <list>        <chr>       <list>         
 #>  1 <split [5/2]> Bootstrap01 <split [35/14]>
 #>  2 <split [5/2]> Bootstrap02 <split [35/14]>
-#>  3 <split [5/2]> Bootstrap03 <split [35/14]>
-#>  4 <split [5/1]> Bootstrap04 <split [35/7]> 
+#>  3 <split [5/3]> Bootstrap03 <split [35/21]>
+#>  4 <split [5/2]> Bootstrap04 <split [35/14]>
 #>  5 <split [5/2]> Bootstrap05 <split [35/14]>
-#>  6 <split [5/2]> Bootstrap06 <split [35/14]>
-#>  7 <split [5/2]> Bootstrap07 <split [35/14]>
-#>  8 <split [5/3]> Bootstrap08 <split [35/21]>
+#>  6 <split [5/1]> Bootstrap06 <split [35/7]> 
+#>  7 <split [5/1]> Bootstrap07 <split [35/7]> 
+#>  8 <split [5/2]> Bootstrap08 <split [35/14]>
 #>  9 <split [5/2]> Bootstrap09 <split [35/14]>
 #> 10 <split [5/2]> Bootstrap10 <split [35/14]>
-#> 11 <split [5/1]> Bootstrap11 <split [35/7]> 
-#> 12 <split [5/2]> Bootstrap12 <split [35/14]>
+#> 11 <split [5/2]> Bootstrap11 <split [35/14]>
+#> 12 <split [5/1]> Bootstrap12 <split [35/7]> 
 #> 13 <split [5/2]> Bootstrap13 <split [35/14]>
-#> 14 <split [5/0]> Bootstrap14 <split [35/0]> 
-#> 15 <split [5/1]> Bootstrap15 <split [35/7]> 
+#> 14 <split [5/2]> Bootstrap14 <split [35/14]>
+#> 15 <split [5/2]> Bootstrap15 <split [35/14]>
 #> 16 <split [5/2]> Bootstrap16 <split [35/14]>
-#> 17 <split [5/3]> Bootstrap17 <split [35/21]>
+#> 17 <split [5/2]> Bootstrap17 <split [35/14]>
 #> 18 <split [5/2]> Bootstrap18 <split [35/14]>
 #> 19 <split [5/1]> Bootstrap19 <split [35/7]> 
-#> 20 <split [5/0]> Bootstrap20 <split [35/0]> 
+#> 20 <split [5/1]> Bootstrap20 <split [35/7]> 
 ```

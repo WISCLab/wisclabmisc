@@ -78,7 +78,7 @@ directly from the (weighted) ECDFs of the controls and cases, so no call
 to [`pROC::roc()`](https://rdrr.io/pkg/pROC/man/roc.html) is made.
 
 `.auc` is calculated using
-[`trapezoid_auc()`](https://www.tjmahr.com/wisclabmisc/reference/trapezoid_auc.md).
+[`trapezoid_auc()`](https://wisclab.github.io/wisclabmisc/reference/trapezoid_auc.md).
 
 `c(-Inf, Inf)` are added to the `predictor` vector so that sensitivities
 and specificities range from 0 to 1.

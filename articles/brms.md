@@ -242,7 +242,7 @@ So we create a function called `brm_args()` the prints out a list of
 default arguments to
 [`brm()`](https://paulbuerkner.com/brms/reference/brm.html). We create
 this function using
-[`wisclabmisc::brms_args_create()`](https://www.tjmahr.com/wisclabmisc/reference/brms_args_create.md).
+[`wisclabmisc::brms_args_create()`](https://wisclab.github.io/wisclabmisc/reference/brms_args_create.md).
 
 Here are the package-provided defaults. (These defaults are just my
 preferred settings.)

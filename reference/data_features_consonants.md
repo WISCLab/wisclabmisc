@@ -3,7 +3,7 @@
 This package provides dataframes of information about the consonants and
 vowels in American English. The *phonetic* features are conventional
 descriptions of how sounds are produced. See also
-[data_acq_consonants](https://www.tjmahr.com/wisclabmisc/reference/data_acq_consonants.md).
+[data_acq_consonants](https://wisclab.github.io/wisclabmisc/reference/data_acq_consonants.md).
 
 ## Usage
 

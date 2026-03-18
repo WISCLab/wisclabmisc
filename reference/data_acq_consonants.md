@@ -4,7 +4,7 @@ This package provides dataframes of information about the consonants and
 vowels in American English. The following datasets collect *acquisition*
 (`acq`) features which (try to) characterize the expected acquisition or
 speech-motor difficulty of speech sounds. See also
-[data_features_consonants](https://www.tjmahr.com/wisclabmisc/reference/data_features_consonants.md).
+[data_features_consonants](https://wisclab.github.io/wisclabmisc/reference/data_features_consonants.md).
 
 ## Usage
 

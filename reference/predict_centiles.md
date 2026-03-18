@@ -19,7 +19,7 @@ pivot_centiles_longer(data)
 - model:
 
   a gamlss model prepared by
-  [`mem_gamlss()`](https://www.tjmahr.com/wisclabmisc/reference/mem_gamlss.md)
+  [`mem_gamlss()`](https://wisclab.github.io/wisclabmisc/reference/mem_gamlss.md)
 
 - centiles:
 
