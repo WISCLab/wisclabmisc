@@ -9,9 +9,9 @@ Description: A collection of 'R' functions for use (and re-use) across
     'WiscLab' projects. These are analysis or presentation oriented
     functions--that is, they are not for data reading or data cleaning.
 License: MIT + file LICENSE
-URL: https://github.com/tjmahr/wisclabmisc,
-    https://www.tjmahr.com/wisclabmisc/
-BugReports: https://github.com/tjmahr/wisclabmisc/issues
+URL: https://github.com/wisclab/wisclabmisc,
+    https://wisclab.github.io/wisclabmisc/
+BugReports: https://github.com/wisclab/wisclabmisc/issues
 Depends:
     R (>= 4.2)
 Imports: 
