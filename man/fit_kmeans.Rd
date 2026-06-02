@@ -13,7 +13,7 @@ fit_kmeans(data, k, vars, args_kmeans = list())
 
 \item{vars}{variable selection for clustering. Select multiple variables
 with \code{c()}, e.g., \code{c(x, y)}. The selection supports tidyselect semantics
-\link[tidyselect:language]{tidyselect::select_helpers}, e.g., \verb{c(x, starts_with("mean_")}.}
+\link[tidyselect:select_helpers]{tidyselect::select_helpers}, e.g., \verb{c(x, starts_with("mean_")}.}
 
 \item{args_kmeans}{additional arguments passed to \code{stats::kmeans()}.}
 }

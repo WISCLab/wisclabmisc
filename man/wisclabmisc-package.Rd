@@ -11,14 +11,19 @@ A collection of 'R' functions for use (and re-use) across 'WiscLab' projects. Th
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/tjmahr/wisclabmisc}
-  \item \url{https://www.tjmahr.com/wisclabmisc/}
-  \item Report bugs at \url{https://github.com/tjmahr/wisclabmisc/issues}
+  \item \url{https://github.com/wisclab/wisclabmisc}
+  \item \url{https://wisclab.github.io/wisclabmisc/}
+  \item Report bugs at \url{https://github.com/wisclab/wisclabmisc/issues}
 }
 
 }
 \author{
 \strong{Maintainer}: Tristan Mahr \email{tristan.mahr@wisc.edu} (\href{https://orcid.org/0000-0002-8890-5116}{ORCID})
+
+Authors:
+\itemize{
+  \item Tristan Mahr \email{tristan.mahr@wisc.edu} (\href{https://orcid.org/0000-0002-8890-5116}{ORCID})
+}
 
 }
 \keyword{internal}

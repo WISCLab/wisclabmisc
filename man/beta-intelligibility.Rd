@@ -104,7 +104,7 @@ bootstrap resampling).
 warning message. Therefore, \code{predict_beta_gamlss()} provides an alternative
 way to compute centiles from the model. This function manually computes the
 centiles instead of relying on \code{\link[gamlss:centiles]{gamlss::centiles()}}. The main difference is
-that new \emph{x} values go through \code{\link[splines:predict.bs]{splines::predict.ns()}} and then these are
+that new \emph{x} values go through \code{\link[splines:predict.ns]{splines::predict.ns()}} and then these are
 multiplied by model coefficients.
 
 \code{optimize_beta_gamlss_slope()} computes the point (i.e., age) and rate of
@@ -144,8 +144,8 @@ mean probability \eqn{\mu} and some other parameter that represents the
 spread around that mean. In GAMLSS (\code{\link[gamlss.dist:BE]{gamlss.dist::BE()}}), they use a scale
 parameter \eqn{\sigma} (larger values mean more spread around mean).
 Everywhere else—\code{\link[betareg:betareg]{betareg::betareg()}} and \code{\link[rstanarm:stan_betareg]{rstanarm::stan_betareg()}} in
-\code{vignette("betareg", "betareg")}, \code{\link[brms:brmsfamily]{brms::Beta()}} in
-\code{vignette("brms_families", "brms")}, \code{\link[mgcv:Beta]{mgcv::betar()}}—it's a precision
+\code{vignette("betareg", "betareg")}, \code{\link[brms:Beta]{brms::Beta()}} in
+\code{vignette("brms_families", "brms")}, \code{\link[mgcv:betar]{mgcv::betar()}}—it's a precision
 parameter \eqn{\phi} (larger values mean more precision, less spread around
 mean). Here is a comparison:
 
