@@ -1,6 +1,7 @@
 # Utterance length imputation and weighting
 
 ``` r
+
 library(wisclabmisc)
 library(tidyverse)
 ```
@@ -25,6 +26,7 @@ back the original data, provide a statistically faithful but jittered
 version of the original dataset.
 
 ``` r
+
 data_demo <- data_example_intelligibility_by_length |> 
   filter(length_longest != 1)
 ```
@@ -46,6 +48,7 @@ Here, in our modeled/re-simulated version of the dataset, observe how
 the number of children per utterance length decreases:
 
 ``` r
+
 library(tidyverse)
 
 data_demo |> 
@@ -94,6 +97,7 @@ The flow for the code consists of the following steps:
 Here is the most recent non-package version of the function:
 
 ``` r
+
 impute_values <- function(data, var, data_train = NULL) {
   spec <- build_wider_spec_for_imputation(data, {{ var }})
   data_wide <- pivot_wider_for_imputation(data, spec)
@@ -194,6 +198,7 @@ the single-word trials.
 But, these caveats aside, it works:
 
 ``` r
+
 data_imputation_1 <- data_demo |>
   mutate(group = "fake", visit_id = 1) |>
   rename(subject_num = child) |> 
@@ -204,6 +209,7 @@ And here is how we can recreate Figure 3 from the supplemental
 materials:
 
 ``` r
+
 plotting_constants <- list(
   pal = c(
     imputed = "#C7A76C", 
@@ -267,6 +273,7 @@ specify all of the relevant variables ahead of time, but the number of
 models or the variables involved are no longer hard-coded.
 
 ``` r
+
 data_imputation_2 <- data_demo |> 
   impute_values_by_length(
     var_y = sim_intelligibility,
@@ -288,6 +295,7 @@ behavior is optional and disabled by default. It does not affect the
 results noticeably.
 
 ``` r
+
 data_imputation_3 <- data_demo |> 
   impute_values_by_length(
     var_y = sim_intelligibility,
@@ -342,6 +350,7 @@ the imputation model. `data_train` can also be a function that will
 applied to the original data set undergoing imputation.
 
 ``` r
+
 data_imputation_trained <- data_demo |> 
   impute_values_by_length(
     var_y = sim_intelligibility,
@@ -386,6 +395,7 @@ but I think [`ordinal::clm()`](https://rdrr.io/pkg/ordinal/man/clm.html)
 is easier to use.
 
 ``` r
+
 prepare_longest_length_model_data <- function(data) {
   data |>
     group_by(child) |>
@@ -444,6 +454,7 @@ compute_longest_length_weights <- function(data, model) {
 Here we can apply this non-package implementation to the example data:
 
 ``` r
+
 data_lol <- data_demo |> 
   filter(tocs_level != 1) |> 
   prepare_longest_length_model_data()
@@ -464,6 +475,7 @@ And here is how we can recreate the Figure from the supplemental
 materials:
 
 ``` r
+
 p1 <- ggplot(data_lol_weights) + 
   aes(x = age_months, y = prob_reach_length  ) + 
   geom_line(aes(color = ordered(tocs_level))) +
@@ -501,6 +513,7 @@ three functions and a join. In the package implementation, we hide
 everything behind a single function.
 
 ``` r
+
 data_plot <- weight_lengths_with_ordinal_model(
   data_train = data_demo |> 
     filter(tocs_level != 1), 
@@ -514,6 +527,7 @@ data_plot <- weight_lengths_with_ordinal_model(
 We can see a match in weights between the two implementations.
 
 ``` r
+
 all.equal(
   data_lol_weights$normalized_prob_reach_length, 
   data_plot$tocs_level_weight
@@ -538,6 +552,7 @@ variable here is a single-number summary of intelligibility in 2–7-word
 utterances, so we exclude 1-word scores.
 
 ``` r
+
 data_weighted_1 <- data_imputation_1 |> 
   filter(tocs_level != 1) |> 
   left_join(data_lol_weights, by = join_by(age_months, tocs_level)) 
@@ -579,6 +594,7 @@ the dataframe of imputed values. We cannot pass in the imputed values as
 length of longest utterance.
 
 ``` r
+
 data_weighted_2 <- weight_lengths_with_ordinal_model(
   data_train = data_demo |> filter(tocs_level != 1), 
   var_length = tocs_level,
@@ -601,6 +617,7 @@ data_means_wide_2 <- data_weighted_2 |>
 We can see the same results from both methods.
 
 ``` r
+
 all.equal(data_means_wide_1$observed, data_means_wide_2$observed)
 #> [1] TRUE
 all.equal(data_means_wide_1$imputed,  data_means_wide_2$imputed)
@@ -612,6 +629,7 @@ all.equal(data_means_wide_1$weighted, data_means_wide_2$weighted)
 The three values overall are very similar:
 
 ``` r
+
 data_means <- data_means_wide_2 |> 
   tidyr::pivot_longer(
     cols = c(-child, -age_months),
@@ -632,6 +650,7 @@ diagonal when the two types of scores are compared, and the difference
 between the two scores is more negative at younger ages.
 
 ``` r
+
 ggplot(data_means_wide_2) + 
   aes(x = observed, y = imputed) +
   geom_abline() +
@@ -641,6 +660,7 @@ ggplot(data_means_wide_2) +
 ![](utterance-length-imputation_files/figure-html/unnamed-chunk-19-1.png)
 
 ``` r
+
 
 ggplot(data_means_wide_2) + 
   aes(x = age_months, y = imputed - observed) +
@@ -656,6 +676,7 @@ differences between the weighted and observed values is small, between
 ±2 percentage points of intelligibility.
 
 ``` r
+
 ggplot(data_means_wide_2) + 
   aes(x = observed, y = weighted) +
   geom_abline() +
@@ -665,6 +686,7 @@ ggplot(data_means_wide_2) +
 ![](utterance-length-imputation_files/figure-html/unnamed-chunk-20-1.png)
 
 ``` r
+
 
 ggplot(data_means_wide_2) + 
   aes(x = age_months, y = weighted - observed) +
@@ -682,6 +704,7 @@ function is applied to `data_join`. Here is how we would train the
 weights on the observed values in the imputation dataframe.
 
 ``` r
+
 data_weighted_3 <- weight_lengths_with_ordinal_model(
   data_train = function(x) x |> 
     filter(sim_intelligibility_imputation == "observed"), 

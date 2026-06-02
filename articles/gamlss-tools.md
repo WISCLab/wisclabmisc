@@ -13,6 +13,7 @@ centiles (percentile curves) from models easiers.
 [`gamlss()`](https://rdrr.io/pkg/gamlss/man/gamlss.html) function.
 
 ``` r
+
 library(wisclabmisc)
 library(gamlss)
 library(tidyverse)
@@ -31,6 +32,7 @@ original dataset, session information and the call used to fit the
 model.
 
 ``` r
+
 str(model$.user, max.level = 1)
 #> List of 3
 #>  $ data        :'data.frame':    108 obs. of  4 variables:
@@ -44,6 +46,7 @@ the dataset because prediction and centile prediction often fails
 without the dataset:
 
 ``` r
+
 newdata <- distinct(data, age)
 centiles.pred(
   model, 
@@ -59,6 +62,7 @@ centiles.pred(
 But including the original dataset works:
 
 ``` r
+
 centiles.pred(
   model, 
   cent = c(25, 50, 75),
@@ -93,6 +97,7 @@ as a streamlined version of the above code, but:
 - prefixes the centiles with `q` (for quantile)
 
 ``` r
+
 centiles <- predict_centiles(
   newdata,
   model, 
@@ -115,6 +120,7 @@ This also includes `.pair` column that helps mark commonly paired
 quantiles 25:75, 10:90, and 5:95.
 
 ``` r
+
 pivot_centiles_longer(centiles)
 #> # A tibble: 12 × 4
 #>      age .centile .value .centile_pair  
@@ -143,6 +149,7 @@ performs this check by computing the percentages of observations less
 than or equal to each centile line.
 
 ``` r
+
 check_model_centiles(data, model, age, distance)
 #> # A tibble: 7 × 4
 #>   .centile     n n_under_centile percent_under_centile
@@ -159,6 +166,7 @@ check_model_centiles(data, model, age, distance)
 Which matches the gamlss package’s output:
 
 ``` r
+
 centiles(
   model, 
   model$.user$data$age, 
@@ -179,6 +187,7 @@ This function also supports grouped data to check centile performance
 for different subsets of data.
 
 ``` r
+
 data %>% 
   mutate(age_bin = ntile(age, 2)) %>% 
   group_by(age_bin) %>% 
@@ -206,6 +215,7 @@ This output also matches the output provide by gamlss’s
 `centile.split()` function:
 
 ``` r
+
 centiles.split(
   model, 
   model$.user$data$age, 

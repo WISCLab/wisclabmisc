@@ -40,33 +40,33 @@ degrees of aggregation. For example, /r,l,j,w/ are *approximant* in
 
     knitr::kable(data_features_consonants)
 
-|       |        |         |           |                |             |            |              |              |           |               |
-|-------|--------|---------|-----------|----------------|-------------|------------|--------------|--------------|-----------|---------------|
-| phone | cmubet | wiscbet | voicing   | voicing_alt    | manner      | manner_alt | place        | place_fct    | sonorance | sonorance_alt |
-| p     | P      | p       | voiceless | spread_glottis | stop        | stop       | labial       | labial       | obstruent | obstruent     |
-| b     | B      | b       | voiced    | plain          | stop        | stop       | labial       | labial       | obstruent | obstruent     |
-| t     | T      | t       | voiceless | spread_glottis | stop        | stop       | alveolar     | alveolar     | obstruent | obstruent     |
-| d     | D      | d       | voiced    | plain          | stop        | stop       | alveolar     | alveolar     | obstruent | obstruent     |
-| k     | K      | k       | voiceless | spread_glottis | stop        | stop       | velar        | velar        | obstruent | obstruent     |
-| g     | G      | g       | voiced    | plain          | stop        | stop       | velar        | velar        | obstruent | obstruent     |
-| tʃ    | CH     | tsh     | voiceless | spread_glottis | affricate   | affricate  | postalveolar | postalveolar | obstruent | strident      |
-| dʒ    | JH     | dzh     | voiced    | plain          | affricate   | affricate  | postalveolar | postalveolar | obstruent | strident      |
-| m     | M      | m       | voiced    | NA             | nasal       | nasal      | labial       | labial       | sonorant  | sonorant      |
-| n     | N      | n       | voiced    | NA             | nasal       | nasal      | alveolar     | alveolar     | sonorant  | sonorant      |
-| ŋ     | NG     | ng      | voiced    | NA             | nasal       | nasal      | velar        | velar        | sonorant  | sonorant      |
-| f     | F      | f       | voiceless | spread_glottis | fricative   | fricative  | labiodental  | labiodental  | obstruent | strident      |
-| v     | V      | v       | voiced    | plain          | fricative   | fricative  | labiodental  | labiodental  | obstruent | strident      |
-| θ     | TH     | th      | voiceless | spread_glottis | fricative   | fricative  | dental       | dental       | obstruent | obstruent     |
-| ð     | DH     | dh      | voiced    | plain          | fricative   | fricative  | dental       | dental       | obstruent | obstruent     |
-| s     | S      | s       | voiceless | spread_glottis | fricative   | fricative  | alveolar     | alveolar     | obstruent | strident      |
-| z     | Z      | z       | voiced    | plain          | fricative   | fricative  | alveolar     | alveolar     | obstruent | strident      |
-| ʃ     | SH     | sh      | voiceless | spread_glottis | fricative   | fricative  | postalveolar | postalveolar | obstruent | strident      |
-| ʒ     | ZH     | zh      | voiced    | plain          | fricative   | fricative  | postalveolar | postalveolar | obstruent | strident      |
-| h     | HH     | h       | voiceless | spread_glottis | fricative   | fricative  | glottal      | glottal      | obstruent | obstruent     |
-| l     | L      | l       | voiced    | NA             | approximant | liquid     | alveolar     | alveolar     | sonorant  | sonorant      |
-| r     | R      | r       | voiced    | NA             | approximant | liquid     | postalveolar | postalveolar | sonorant  | sonorant      |
-| w     | W      | w       | voiced    | NA             | approximant | glide      | labiovelar   | NA           | sonorant  | sonorant      |
-| j     | Y      | j       | voiced    | NA             | approximant | glide      | palatal      | palatal      | sonorant  | sonorant      |
+|  |  |  |  |  |  |  |  |  |  |  |
+|----|----|----|----|----|----|----|----|----|----|----|
+| phone | cmubet | wiscbet | voicing | voicing_alt | manner | manner_alt | place | place_fct | sonorance | sonorance_alt |
+| p | P | p | voiceless | spread_glottis | stop | stop | labial | labial | obstruent | obstruent |
+| b | B | b | voiced | plain | stop | stop | labial | labial | obstruent | obstruent |
+| t | T | t | voiceless | spread_glottis | stop | stop | alveolar | alveolar | obstruent | obstruent |
+| d | D | d | voiced | plain | stop | stop | alveolar | alveolar | obstruent | obstruent |
+| k | K | k | voiceless | spread_glottis | stop | stop | velar | velar | obstruent | obstruent |
+| g | G | g | voiced | plain | stop | stop | velar | velar | obstruent | obstruent |
+| tʃ | CH | tsh | voiceless | spread_glottis | affricate | affricate | postalveolar | postalveolar | obstruent | strident |
+| dʒ | JH | dzh | voiced | plain | affricate | affricate | postalveolar | postalveolar | obstruent | strident |
+| m | M | m | voiced | NA | nasal | nasal | labial | labial | sonorant | sonorant |
+| n | N | n | voiced | NA | nasal | nasal | alveolar | alveolar | sonorant | sonorant |
+| ŋ | NG | ng | voiced | NA | nasal | nasal | velar | velar | sonorant | sonorant |
+| f | F | f | voiceless | spread_glottis | fricative | fricative | labiodental | labiodental | obstruent | strident |
+| v | V | v | voiced | plain | fricative | fricative | labiodental | labiodental | obstruent | strident |
+| θ | TH | th | voiceless | spread_glottis | fricative | fricative | dental | dental | obstruent | obstruent |
+| ð | DH | dh | voiced | plain | fricative | fricative | dental | dental | obstruent | obstruent |
+| s | S | s | voiceless | spread_glottis | fricative | fricative | alveolar | alveolar | obstruent | strident |
+| z | Z | z | voiced | plain | fricative | fricative | alveolar | alveolar | obstruent | strident |
+| ʃ | SH | sh | voiceless | spread_glottis | fricative | fricative | postalveolar | postalveolar | obstruent | strident |
+| ʒ | ZH | zh | voiced | plain | fricative | fricative | postalveolar | postalveolar | obstruent | strident |
+| h | HH | h | voiceless | spread_glottis | fricative | fricative | glottal | glottal | obstruent | obstruent |
+| l | L | l | voiced | NA | approximant | liquid | alveolar | alveolar | sonorant | sonorant |
+| r | R | r | voiced | NA | approximant | liquid | postalveolar | postalveolar | sonorant | sonorant |
+| w | W | w | voiced | NA | approximant | glide | labiovelar | NA | sonorant | sonorant |
+| j | Y | j | voiced | NA | approximant | glide | palatal | palatal | sonorant | sonorant |
 
 Description of each column:
 
@@ -146,26 +146,26 @@ does not assign a feature to nasals or approximants.
 
     knitr::kable(data_features_vowels)
 
-|       |        |         |        |        |            |           |           |            |            |           |              |           |
-|-------|--------|---------|--------|--------|------------|-----------|-----------|------------|------------|-----------|--------------|-----------|
-| phone | cmubet | wiscbet | hint   | manner | manner_alt | tenseness | height    | height_fct | height_alt | backness  | backness_fct | rounding  |
-| i     | IY     | i       | beat   | vowel  | vowel      | tense     | high      | high       | high       | front     | front        | unrounded |
-| ɪ     | IH     | I       | bit    | vowel  | vowel      | lax       | mid-high  | mid-high   | high       | front     | front        | unrounded |
-| eɪ    | EY     | eI      | bait   | vowel  | vowel      | tense     | mid-high  | mid-high   | mid        | front     | front        | unrounded |
-| ɛ     | EH     | E       | bet    | vowel  | vowel      | lax       | mid-low   | mid-low    | mid        | front     | front        | unrounded |
-| æ     | AE     | ae      | bat    | vowel  | vowel      | lax       | low       | low        | low        | front     | front        | unrounded |
-| ʌ     | AH     | ^       | but    | vowel  | vowel      | lax       | mid-low   | mid-low    | mid        | central   | central      | unrounded |
-| ə     | AH     | 4       | comma  | vowel  | vowel      | lax       | mid-low   | mid-low    | mid        | central   | central      | unrounded |
-| u     | UW     | u       | boot   | vowel  | vowel      | tense     | high      | high       | high       | back      | back         | rounded   |
-| ʊ     | UH     | U       | book   | vowel  | vowel      | lax       | mid-high  | mid-high   | high       | back      | back         | rounded   |
-| oʊ    | OW     | oU      | boat   | vowel  | vowel      | tense     | mid-high  | mid-high   | mid        | back      | back         | rounded   |
-| ɔ     | AO     | c       | bought | vowel  | vowel      | tense     | mid-low   | mid-low    | low        | back      | back         | rounded   |
-| ɑ     | AA     | @       | bot    | vowel  | vowel      | tense     | low       | low        | low        | back      | back         | unrounded |
-| aʊ    | AW     | @U      | bout   | vowel  | diphthong  | diphthong | diphthong | NA         | diphthong  | diphthong | NA           | diphthong |
-| aɪ    | AY     | @I      | bite   | vowel  | diphthong  | diphthong | diphthong | NA         | diphthong  | diphthong | NA           | diphthong |
-| ɔɪ    | OY     | cI      | boy    | vowel  | diphthong  | diphthong | diphthong | NA         | diphthong  | diphthong | NA           | diphthong |
-| ɝ     | ER     | 3^      | letter | vowel  | r-colored  | r-colored | mid-low   | mid-low    | mid        | central   | central      | r-colored |
-| ɚ     | ER     | 4^      | burt   | vowel  | r-colored  | r-colored | mid-low   | mid-low    | mid        | central   | central      | r-colored |
+|  |  |  |  |  |  |  |  |  |  |  |  |  |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| phone | cmubet | wiscbet | hint | manner | manner_alt | tenseness | height | height_fct | height_alt | backness | backness_fct | rounding |
+| i | IY | i | beat | vowel | vowel | tense | high | high | high | front | front | unrounded |
+| ɪ | IH | I | bit | vowel | vowel | lax | mid-high | mid-high | high | front | front | unrounded |
+| eɪ | EY | eI | bait | vowel | vowel | tense | mid-high | mid-high | mid | front | front | unrounded |
+| ɛ | EH | E | bet | vowel | vowel | lax | mid-low | mid-low | mid | front | front | unrounded |
+| æ | AE | ae | bat | vowel | vowel | lax | low | low | low | front | front | unrounded |
+| ʌ | AH | ^ | but | vowel | vowel | lax | mid-low | mid-low | mid | central | central | unrounded |
+| ə | AH | 4 | comma | vowel | vowel | lax | mid-low | mid-low | mid | central | central | unrounded |
+| u | UW | u | boot | vowel | vowel | tense | high | high | high | back | back | rounded |
+| ʊ | UH | U | book | vowel | vowel | lax | mid-high | mid-high | high | back | back | rounded |
+| oʊ | OW | oU | boat | vowel | vowel | tense | mid-high | mid-high | mid | back | back | rounded |
+| ɔ | AO | c | bought | vowel | vowel | tense | mid-low | mid-low | low | back | back | rounded |
+| ɑ | AA | @ | bot | vowel | vowel | tense | low | low | low | back | back | unrounded |
+| aʊ | AW | @U | bout | vowel | diphthong | diphthong | diphthong | NA | diphthong | diphthong | NA | diphthong |
+| aɪ | AY | @I | bite | vowel | diphthong | diphthong | diphthong | NA | diphthong | diphthong | NA | diphthong |
+| ɔɪ | OY | cI | boy | vowel | diphthong | diphthong | diphthong | NA | diphthong | diphthong | NA | diphthong |
+| ɝ | ER | 3^ | letter | vowel | r-colored | r-colored | mid-low | mid-low | mid | central | central | r-colored |
+| ɚ | ER | 4^ | burt | vowel | r-colored | r-colored | mid-low | mid-low | mid | central | central | r-colored |
 
 Description of each column:
 

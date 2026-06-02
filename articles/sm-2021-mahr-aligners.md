@@ -17,6 +17,7 @@ in the R programming language.
 First let’s load in the data.
 
 ``` r
+
 library(tidyverse)
 #> Warning: package 'tibble' was built under R version 4.0.3
 model_data <- drake::readd("data_paper_model_counts") %>% 
@@ -51,6 +52,7 @@ phoneme class, aligner, and class-by-aligner interactions and random
 by-child random intercepts and by-child-by-aligner random intercepts.
 
 ``` r
+
 library(lme4)
 #> Warning: package 'lme4' was built under R version 4.0.3
 #> Loading required package: Matrix
@@ -77,6 +79,7 @@ plausible, but this structure is simple (matches are nested in children
 and aligner errors are nested in children) and yields model convergence.
 
 ``` r
+
 summary(m_class_int)
 #> Generalized linear mixed model fit by maximum likelihood (Laplace
 #>   Approximation) [glmerMod]
@@ -138,6 +141,7 @@ available online
 <https://cran.r-project.org/web/packages/emmeans/vignettes/transformations.html#cbpp>.
 
 ``` r
+
 variances <- broom.mixed::tidy(m_class_int, "ran_pars", scales = "vcov")
 #> Registered S3 method overwritten by 'broom.mixed':
 #>   method      from 
@@ -151,6 +155,7 @@ We get the marginal means on the probability scale (`type = "response"`)
 for each aligner (`~ aligner`).
 
 ``` r
+
 library(emmeans)
 #> Warning: package 'emmeans' was built under R version 4.0.3
 
@@ -169,6 +174,7 @@ ignoring them for this estimate and averaging over the sound classes.
 The software prints `NOTE` to remind of this fact. Here are the means:
 
 ``` r
+
 means_by_aligner
 #>  aligner       prob      SE  df asymp.LCL asymp.UCL
 #>  Kaldi        0.757 0.00932 Inf     0.738     0.775
@@ -189,6 +195,7 @@ probability. These marginal means are pretty close to the means of the
 child-level proportions:
 
 ``` r
+
 model_data %>% 
   group_by(aligner) %>% 
   summarise(
@@ -222,6 +229,7 @@ contrast-coding and the *p*-value adjustment automatically. Here we use
 the Bonferroni method.
 
 ``` r
+
 by_aligner <- emmeans(
   m_class_int, 
   spec = pairwise ~ aligner,  
@@ -265,6 +273,7 @@ class) to aggregating by class (averaging over aligner). We otherwise
 use the same procedure.
 
 ``` r
+
 by_class <- emmeans(
   m_class_int, 
   spec = pairwise ~ class,  
@@ -309,6 +318,7 @@ the contrast and the *p*-value adjustment automatically. Here it uses
 `"fdr"` adjustment (false discovery rate, Benjamini & Hochberg, 1995).
 
 ``` r
+
 by_aligner_class <- emmeans(
   m_class_int, 
   spec = eff ~ class * aligner,  
@@ -321,6 +331,7 @@ by_aligner_class <- emmeans(
 First, here are the means.
 
 ``` r
+
 by_aligner_class$emmeans
 #>  class      aligner       prob      SE  df asymp.LCL asymp.UCL
 #>  fricatives Kaldi        0.749 0.01062 Inf     0.728     0.770
@@ -352,6 +363,7 @@ by_aligner_class$emmeans
 More importantly, here are the contrasts.
 
 ``` r
+
 by_aligner_class$contrasts
 #>  contrast                       odds.ratio     SE  df z.ratio p.value
 #>  fricatives Kaldi effect             1.100 0.0461 Inf   1.087 0.3193 
@@ -391,6 +403,7 @@ We now augment the model to include age. We consider a model with just
 2-way interactions and model with a full 3-way interactions.
 
 ``` r
+
 # Add age, age x aligner, age x class effects
 m_class_int_age_2way <- glmer(
   cbind(n_matches, n_misses) ~ 
@@ -420,6 +433,7 @@ Model comparison (lowest AIC, chi-square tests) supports the full, 3-way
 model.
 
 ``` r
+
 format(
   anova(m_class_int, m_class_int_age_2way, m_class_int_age_3way), 
   digits = 3
@@ -436,6 +450,7 @@ effect coding (`eff ~ aligner`). We compare the slopes at 60 months
 (``` at = lis``t(age_scale = 0) ```).
 
 ``` r
+
 variances2 <- broom.mixed::tidy(
   m_class_int_age_3way, 
   "ran_pars", 
@@ -480,6 +495,7 @@ The values here are on the logit (log-odds) scale. Exponentiating them
 produces odds ratios.
 
 ``` r
+
 aligner_age_trends$emtrends %>% 
   broom::tidy(conf.int = TRUE) %>% 
   mutate(
@@ -515,6 +531,7 @@ reverse-pairwise differences—age 1 / age 0 on the odds ratio scale—but
 we do not use them here.)
 
 ``` r
+
 aligner_age_trends_1_vs_0 <- emmeans(
   m_class_int_age_3way, 
   revpairwise ~ age_scale | aligner , 
@@ -540,6 +557,7 @@ Now, we can do the converse aggregation and averaging: Look at the age
 trend for each sound class averaging over aligners.
 
 ``` r
+
 class_age_trends <- emtrends(
   m_class_int_age_3way, 
   eff ~ class, 
@@ -574,6 +592,7 @@ class_age_trends
 And likewise, look at odds ratios.
 
 ``` r
+
 class_age_trends$emtrends %>% 
   broom::tidy(conf.int = TRUE) %>% 
   mutate(
@@ -598,6 +617,7 @@ class_age_trends$emtrends %>%
 Finally, we can examine all of the Aligner x Class age trends.
 
 ``` r
+
 class_aligner_trends <- emtrends(
   m_class_int_age_3way, 
    ~ class | aligner, 
@@ -648,6 +668,7 @@ class_aligner_trends %>%
 ## Computing environment
 
 ``` r
+
 sessioninfo::session_info()
 #> - Session info ---------------------------------------------------------------
 #>  setting  value                       

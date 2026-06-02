@@ -22,6 +22,7 @@ Let’s take note of the data.
 Here are the first 10 rows of the data.
 
 ``` r
+
 library(tidyverse)
 data
 #> # A tibble: 513 x 4
@@ -51,6 +52,7 @@ Children are nested in speech-language profile groups and visits are
 nested in children.
 
 ``` r
+
 data %>% 
   group_by(slpg, sid) %>% 
   summarise(
@@ -90,6 +92,7 @@ Intelligibility is a proportion between 0 and 1. Age ranges from 24
 months to 96 months.
 
 ``` r
+
 summary(data$intel, digits = 2) 
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #>  0.0058  0.3000  0.6000  0.5500  0.8300  0.9900
@@ -113,6 +116,7 @@ up model specifications. An ordinary linear model regressing some `y`
 onto `x` is set up as follows.
 
 ``` r
+
 library(brms)
 
 bf(
@@ -133,6 +137,7 @@ the mean and linear model for the precision. Here is how the model
 formula looks at this point, using placeholders for the formulas.
 
 ``` r
+
 bf(
   intel ~ `some nonlinear formula for the mean`,
   phi ~ `some linear formula for the precision`,
@@ -150,6 +155,7 @@ Let’s start with overall model of the mean. We are fitting a logistic
 curve. These usually have the form:
 
 ``` r
+
 f(y) = asymptote / (1 + exp((mid - x) * scale))
 ```
 
@@ -164,6 +170,7 @@ Later on, each of these features will get a linear model. Thus, our
 model formula expands to:
 
 ``` r
+
 bf(
   intel ~ asymptote / (1 + exp((mid - age) * scale)),
   asymptote ~ `some linear formula`,
@@ -191,6 +198,7 @@ inverse logit function.
 The updated formula is as follows:
 
 ``` r
+
 inv_logit <- function(x) 1 / (1 + exp(-x))
 
 bf(
@@ -211,6 +219,7 @@ to specify the linear model for each of the curve parameters. The same
 linear model is used for each one:
 
 ``` r
+
 asymlogit ~ 1 + slpg + (0 + slpg | ID | sid)
 mid       ~ 1 + slpg + (0 + slpg | ID | sid)
 scale     ~ 1 + slpg + (0 + slpg | ID | sid)
@@ -247,6 +256,7 @@ the model without the correlations does not converge (due to divergent
 iterations). Therefore, we allow the cross-group correlations.
 
 ``` r
+
 inv_logit <- function(x) 1 / (1 + exp(-x))
 
 bf(
@@ -266,6 +276,7 @@ We allow the precision to change linearly with age and allow the average
 precision to change by group:
 
 ``` r
+
 phi ~ 1 + age + slpg
 ```
 
@@ -274,6 +285,7 @@ phi ~ 1 + age + slpg
 Here is the full model formula.
 
 ``` r
+
 inv_logit <- function(x) 1 / (1 + exp(-x))
 
 full_formula <- bf(
@@ -298,6 +310,7 @@ the NSMI group (`coef = "Intercept"`) and for the group differences
 (`class = "b"`, *b* as in a *beta* in a regression equation.)
 
 ``` r
+
 prior_fixef <- c(
   prior(normal(1.25, .5), nlpar = "asymlogit", coef = "Intercept"),
   prior(normal(-.5, .5), nlpar = "asymlogit", class = "b"),
@@ -330,6 +343,7 @@ The priors for the population variation are given in terms of standard
 deviations and an LKJ prior for the correlation matrix.
 
 ``` r
+
 prior_ranef <- c(
   prior(normal(0, 1.25), class = "sd", nlpar = "asymlogit"),
   prior(normal(10, 2.5), class = "sd", nlpar = "mid"),
@@ -354,6 +368,7 @@ Enough information to rule out degenerate correlations.
 Finally, for the precision parameter, we use weakly informative priors:
 
 ``` r
+
 prior_phi <- c(
   prior(normal(2, 1), dpar = "phi", class = "Intercept"),
   prior(normal(0, 1), dpar = "phi", class = "b")
@@ -377,6 +392,7 @@ manuscript, include sampling settings. (There are some slight variables
 name changes and syntax changes compared to the above exposition).
 
 ``` r
+
 fit_model <- function(data, chains = 4, cores = 4, sample_prior = "no") {
   inv_logit <- function(x) 1 / (1 + exp(-x))
 
@@ -435,6 +451,7 @@ fit <- fit_model(data, cores = 4, chains = 4)
 Here is model output (posterior median, SD, 95% intervals):
 
 ``` r
+
 #>  Family: beta 
 #>   Links: mu = identity; phi = log 
 #> Formula: multiword_intel2 ~ inv_logit(asymlogit) * inv(1 + exp((mid - age) * exp(scale))) 
@@ -520,6 +537,7 @@ Here is the diagnostic output. Rhat should be \< 1.05. Effective sample
 size should be \> 400.
 
 ``` r
+
 #>  Family: beta 
 #>   Links: mu = identity; phi = log 
 #> Formula: multiword_intel2 ~ inv_logit(asymlogit) * inv(1 + exp((mid - age) * exp(scale))) 
@@ -604,6 +622,7 @@ size should be \> 400.
 Here is Stan’s internal diagonistic check.
 
 ``` r
+
 rstan::check_hmc_diagnostics(fit$fit)
 #> 
 #> Divergences:

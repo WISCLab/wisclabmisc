@@ -21,6 +21,7 @@ Our data features repeated measurements of VSS levels rating. The first
 few rows of our data set would be:
 
 ``` r
+
 library(tidyverse)
 data
 #> # A tibble: 328 x 4
@@ -90,6 +91,7 @@ effect model. We illustrate the syntax by elaborating from an
 intercept-only model to our fully specified model:
 
 ``` r
+
 # estimate three thresholds: 1|2, 2|3, 3|4
 vss_rating ~ 1
 
@@ -120,6 +122,7 @@ to get the model machinery going.
 Below are these default priors:
 
 ``` r
+
 library(brms)
 priors <- get_prior(
   formula = vss_rating ~ 1 + age_group_4 + (1 + age_group_4 | child), 
@@ -161,6 +164,7 @@ number seed (for reproducibility) and options for how to run the Monte
 Carlo sampling by Stan:
 
 ``` r
+
 model <- brm(
   vss_rating ~ 1 + age_group_4 + (1 + age_group_4 | child),
   data = data,
@@ -179,6 +183,7 @@ model and they are discarded, leaving us with a posterior distribution
 of 8,000 draws of model parameters:
 
 ``` r
+
 nchains(model)
 #> [1] 8
 niterations(model)
@@ -190,6 +195,7 @@ ndraws(model)
 The model passes Hamiltonian Monte Carlo diagnostics:
 
 ``` r
+
 rstan::check_hmc_diagnostics(model$fit)
 #> 
 #> Divergences:
@@ -205,6 +211,7 @@ rstan::check_hmc_diagnostics(model$fit)
 The model parameters have the following estimates:
 
 ``` r
+
 summary(model, robust = TRUE)
 #>  Family: cumulative 
 #>   Links: mu = logit; disc = identity 
@@ -267,6 +274,7 @@ reported in the manuscript for a two-year-increase in age on rating
 probabilities:
 
 ``` r
+
 b_age <- fixef(model, robust = TRUE)["age_group_4", ]
 exp(-2 * b_age) |> round(1)
 #>  Estimate Est.Error      Q2.5     Q97.5 
@@ -279,6 +287,7 @@ child by creating a “fake” child and asking for the prediction but not
 conditioning on the `child` variable (`re_formula = NA`).
 
 ``` r
+
 library(tidybayes)
 #> 
 #> Attaching package: 'tidybayes'
@@ -302,6 +311,7 @@ draws_average_child <- one_new_child %>%
 We have 8000 posterior samples for each age and rating level:
 
 ``` r
+
 count(draws_average_child, child, age_group_4, .category)
 #> # A tibble: 16 x 5
 #> # Groups:   child, age_group_4, .row, .category [16]
@@ -329,6 +339,7 @@ We can do two things now: Compute quantiles on the probabilities or
 compute expected ratings.
 
 ``` r
+
 draws_average_child %>% 
   ggdist::median_qi() %>% 
   select(child:.upper)
@@ -362,6 +373,7 @@ If we multiple each rating’s numerical level by its probability and sum
 the results, we get an average or expected rating.
 
 ``` r
+
 draws_expected_ratings <- draws_average_child %>%
   ungroup() %>% 
   mutate(
@@ -392,6 +404,7 @@ draws_expected_ratings
 Then compute quantiles on these expected ratings:
 
 ``` r
+
 draws_expected_ratings %>%
   group_by(child, age_group_4) %>% 
   ggdist::median_qi(expected_rating)
@@ -425,6 +438,7 @@ the following procedure.
 Here are the new chidren:
 
 ``` r
+
 data_100_new_kids
 #> # A tibble: 400 x 3
 #>    child age_group_4 age_group
@@ -445,6 +459,7 @@ data_100_new_kids
 Then we compute expectations for them:
 
 ``` r
+
 draws_posterior_epred_100_new_children <- data_100_new_kids %>%
   tidybayes::add_epred_draws(
     model, 
@@ -458,6 +473,7 @@ draws_posterior_epred_100_new_children <- data_100_new_kids %>%
 And average the children within each draw together:
 
 ``` r
+
 draws_posterior_epred_100_new_children_means <-
   draws_posterior_epred_100_new_children %>%
     group_by(.draw, age_group, age_group_4, .category) %>%
@@ -487,6 +503,7 @@ This code then provides the marginal VSS level rating probabilities
 reported in the manuscript:
 
 ``` r
+
 #> # A tibble: 16 x 6
 #>    age_group age_group_4 .category .epred  .lower .upper
 #>        <dbl>       <dbl> <fct>      <dbl>   <dbl>  <dbl>
@@ -523,6 +540,7 @@ are many duplicated patterns of data of data. Here are the most frequent
 patterns:
 
 ``` r
+
 data_vss_wide %>% 
   count(
     vss_at_4, 
@@ -562,6 +580,7 @@ continuous version of it called `starting_rating_cont`. We use the
 continuous version when compute the age by initial rating interaction.
 
 ``` r
+
 data2 %>% 
   distinct(starting_rating, starting_rating_cont)
 #> # A tibble: 4 x 2
@@ -578,6 +597,7 @@ model intercept), using the variable `age_group_10`. The data has the
 following structure:
 
 ``` r
+
 data2
 #> # A tibble: 222 x 5
 #>    child vss_rating starting_rating age_group_10 starting_rating_cont
@@ -604,6 +624,7 @@ adjusted using these starting rating values by using the
 interaction.
 
 ``` r
+
 model_t <- brm(
   vss_rating ~ 
     1 + age_group_10 + starting_rating + 
@@ -622,6 +643,7 @@ model_t <- brm(
 The model passes model diagnostics:
 
 ``` r
+
 rstan::check_hmc_diagnostics(model_t$fit)
 #> 
 #> Divergences:
@@ -638,6 +660,7 @@ The model has the following output, although our inferences are driven
 solely by estimated marginal means:
 
 ``` r
+
 summary(model_t, robust = TRUE)
 #>  Family: cumulative 
 #>   Links: mu = logit; disc = identity 

@@ -1,6 +1,7 @@
 # A Workflow for brms
 
 ``` r
+
 library(brms)
 ```
 
@@ -14,6 +15,7 @@ upon~~ iterated over our last few analysis projects.
 Suppose that we have a dataset of age and intelligibility.
 
 ``` r
+
 data <- wisclabmisc::data_fake_intelligibility
 data
 #> # A tibble: 200 × 2
@@ -39,6 +41,7 @@ priors. For example, suppose we want to compare models with different
 kinds of age trends using splines:
 
 ``` r
+
 library(brms)
 library(splines)
 f1 <- bf(
@@ -81,6 +84,7 @@ LOO scores, a helper function for the default/shared arguments to
 main function for fitting models from the set.
 
 ``` r
+
 lookup_prior <- function(prior_slug) {
   # ...
 } 
@@ -119,6 +123,7 @@ options: use some weak priors for the logit-scale mu and the log-scale
 phi, or use the brms defaults.
 
 ``` r
+
 lookup_prior <- function(prior_slug) {
   l <- list(
     default = c(
@@ -139,6 +144,7 @@ prior on the random effect variance when the formula doesn’t include
 random effects:
 
 ``` r
+
 validate_prior(
   c(lookup_prior("default"), prior(normal(0, 1), class = "sd")),
   formula = f1,
@@ -158,6 +164,7 @@ spline [`s()`](https://paulbuerkner.com/brms/reference/s.html). In my
 most recent project, I had the following lookup function:
 
 ``` r
+
 lookup_brms_priors <- function(prior_slug = "logit_ri") {
   l <- list(
     logit_ri = c(
@@ -211,6 +218,7 @@ needed. The `reloo` argument gets forwarded to
 scores for problematic observations.
 
 ``` r
+
 add_loo_criterion <- function(x, ..., use_reloo = FALSE) {
   if (use_reloo) {
     brms::add_criterion(
@@ -248,6 +256,7 @@ Here are the package-provided defaults. (These defaults are just my
 preferred settings.)
 
 ``` r
+
 brm_args <- wisclabmisc::brms_args_create()
 brm_args()
 #> List of 9
@@ -277,6 +286,7 @@ If these defaults are troublesome (`refresh`), we can generate a new
 `brm_args()` function with different defaults.
 
 ``` r
+
 brm_args <- wisclabmisc::brms_args_create(iter = 5000, refresh = 100)
 brm_args()
 #> List of 9
@@ -299,6 +309,7 @@ Here we can overwrite the number of chains and set a value for
 `adapt_delta`.
 
 ``` r
+
 brm_args(chains = 2, adapt_delta = .98)
 #> List of 9
 #>  $ backend   : chr "cmdstanr"
@@ -324,6 +335,7 @@ the prior and formula to use, and create a filename for the `file`
 argument.
 
 ``` r
+
 # Use rstan for the article page
 brm_args <- wisclabmisc::brms_args_create(backend = "rstan")
 
@@ -386,6 +398,7 @@ fit_age_model <- function(
 Let’s fit the models and compare them.
 
 ``` r
+
 # I'm only using rstan to get the demo to work on GitHub pages
 library(rstan)
 #> Loading required package: StanHeaders
@@ -406,8 +419,8 @@ loo_compare(m1, m2, m3) |>
   print(simplify = FALSE)
 #>    elpd_diff se_diff elpd_loo se_elpd_loo p_loo  se_p_loo looic  se_looic
 #> m1    0.0       0.0   248.6     14.8         3.2    0.4   -497.3   29.7  
-#> m2   -0.6       2.1   248.0     14.7         4.8    0.6   -496.1   29.4  
-#> m3   -4.1       2.5   244.5     14.9         6.5    0.7   -489.0   29.8
+#> m2   -0.6       2.0   248.0     14.7         4.8    0.6   -496.1   29.4  
+#> m3   -3.9       2.5   244.8     14.9         6.3    0.7   -489.6   29.8
 ```
 
 ## The full workflow
@@ -417,6 +430,7 @@ boilerplate for new projects. Putting this code chunk in a easy to grab
 place is my motivation for writing this article. 🤓
 
 ``` r
+
 lookup_prior <- function(prior_slug) {
   l <- list(
     default = c(

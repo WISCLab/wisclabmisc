@@ -1,6 +1,7 @@
 # Tools for ROC curves
 
 ``` r
+
 library(tidyverse)
 library(wisclabmisc)
 library(pROC, exclude = c("cov", "smooth", "var"))
@@ -68,6 +69,7 @@ We have the `outcome` (`Good` versus `Poor`) and some measure called
 there are `Poor` outcomes.
 
 ``` r
+
 data <- as_tibble(aSAH)
 data
 #> # A tibble: 113 × 7
@@ -110,6 +112,7 @@ can then plot these proportions to visualize the trading relations
 between specificity and sensitivity as the threshold changes.
 
 ``` r
+
 by_outcome <- split(data, data$outcome)
 smallest_diff <- min(diff(unique(sort(data$s100b))))
 grid <- tibble(
@@ -164,6 +167,7 @@ distribution* is the proportion of points below each value of x and
 *empirical* means that this value is computed directly from the data.
 
 ``` r
+
 ggplot(data) + 
   aes(x = s100b) + 
   stat_ecdf(
@@ -201,6 +205,7 @@ order so that the most ideal point is the top left corner (sensitivity =
 1, specificity = 1).
 
 ``` r
+
 roc_coordinates <- roc_coordinates |> 
   rename(
     sensitivities = prop_poor_above, 
@@ -224,6 +229,7 @@ We can compare our plot to the one provided by pROC package. We find a
 perfect match in our sensitivity and specificity values.
 
 ``` r
+
 roc <- pROC::roc(data, response = outcome, predictor = s100b)
 #> Setting levels: control = Good, case = Poor
 #> Setting direction: controls < cases
@@ -233,6 +239,7 @@ plot(roc)
 ![](roc_files/figure-html/base-roc-1.png)
 
 ``` r
+
 
 proc_coordinates <- roc[2:3] |> 
   as.data.frame() |> 
@@ -271,6 +278,7 @@ Let’s return the above example, predicting the group label `outcome`
 (case: `Poor`, control: `Good`) from the predictor `s100b`.
 
 ``` r
+
 r <- pROC::roc(data, outcome, s100b)
 #> Setting levels: control = Good, case = Poor
 #> Setting direction: controls < cases
@@ -294,6 +302,7 @@ Ultimately, we want a the results in a dataframe so that one row will
 provide the sensitivity and specificity for each threshold value.
 
 ``` r
+
 r
 #> 
 #> Call:
@@ -329,6 +338,7 @@ additional features that allow it to identify the “best” ROC points, but
 it strips off useful data like the direction used.
 
 ``` r
+
 r[1:5] |> 
   as.data.frame() |> 
   tibble::as_tibble()
@@ -377,6 +387,7 @@ and `is_best_closest_topleft`. Finally, it retains the name of the
 predictor variable.
 
 ``` r
+
 compute_empirical_roc(data, outcome, s100b)
 #> ℹ No `levels` provided. Using `levels = c("Good", "Poor")`.
 #> • Setting control to outcome == "Good".
@@ -392,6 +403,7 @@ We can pass the arguments `direction` and `levels` to
 messages.
 
 ``` r
+
 data_roc <- compute_empirical_roc(
   data, 
   outcome, 
@@ -426,6 +438,7 @@ upper-left corner. The following plot labels each of these distances.
 The Youden’s point and the topleft point here are the same point.
 
 ``` r
+
 data_roc <- data_roc |> 
   arrange(.sensitivities)
 
@@ -509,6 +522,7 @@ the number of observations in each bin (rounded value). That count is
 the weight.
 
 ``` r
+
 data_bin <- data |> 
   mutate(s100b_bin = round(s100b, 1)) |> 
   group_by(outcome, s100b_bin) |> 
@@ -532,6 +546,7 @@ have the manually computed ROC-curve on weighted data in black and the
 pROC-computed ROC data on unweighted data.
 
 ``` r
+
 data_sens_spec2 <- data |> 
   mutate(s100b_bin = round(s100b, 1)) |> 
   compute_empirical_roc(
@@ -566,6 +581,7 @@ normal density curves on top of each other. Pepe (2003) refers to this
 approach as the “binormal ROC curve”.
 
 ``` r
+
 data_stats <- data |> 
   group_by(outcome) |> 
   summarise(
@@ -620,6 +636,7 @@ of the data, and then within each group, generate a set of points along
 that range and compute that group’s density at each point.
 
 ``` r
+
 data_grid <- data |> 
   mutate(
     xmin = min(s100b),
@@ -654,6 +671,7 @@ Next, we pivot to a wide pivot format because we will be comparing the
 two densities at each point.
 
 ``` r
+
 data_dens <- data_grid |> 
   rename(s100b = x) |> 
   select(-group_mean, -group_sd) |> 
@@ -682,6 +700,7 @@ data frame. Instead, we provide two vectors of densities, and in fact,
 those densities are lost after computing the ROC curve.
 
 ``` r
+
 data_dens <- arrange(data_dens, s100b)
 r_dens <- roc(
   density.controls = data_dens$Good, 
@@ -720,6 +739,7 @@ that best matches one provided by
 [`pROC::roc()`](https://rdrr.io/pkg/pROC/man/roc.html).
 
 ``` r
+
 # direction > : Good > threshold >= Poor
 sens_gt <- rev(cumsum(data_dens$Poor) / sum(data_dens$Poor))
 # direction < : Good < threshold <= Poor
@@ -743,6 +763,7 @@ original threshold values to sensitivity and specificity values. The
 function also lets us use column names directly.
 
 ``` r
+
 data_smooth <- compute_smooth_density_roc(
   data = data_dens, 
   controls = Good, 
@@ -776,6 +797,7 @@ smoothed ROC coordinates. In this case, the Youden and topleft points
 are different.
 
 ``` r
+
 p_best + list(data_smooth)
 ```
 
@@ -785,6 +807,7 @@ As a final demonstration, let’s compare the smooth and empirical ROC
 sensitivity and specificity values along the threshold values.
 
 ``` r
+
 ggplot(data_smooth) + 
   aes(x = s100b) + 
   geom_line(

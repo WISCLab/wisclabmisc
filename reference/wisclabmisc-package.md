@@ -8,13 +8,18 @@ they are not for data reading or data cleaning.
 
 Useful links:
 
-- <https://github.com/tjmahr/wisclabmisc>
+- <https://github.com/wisclab/wisclabmisc>
 
-- <https://www.tjmahr.com/wisclabmisc/>
+- <https://wisclab.github.io/wisclabmisc/>
 
-- Report bugs at <https://github.com/tjmahr/wisclabmisc/issues>
+- Report bugs at <https://github.com/wisclab/wisclabmisc/issues>
 
 ## Author
 
 **Maintainer**: Tristan Mahr <tristan.mahr@wisc.edu>
 ([ORCID](https://orcid.org/0000-0002-8890-5116))
+
+Authors:
+
+- Tristan Mahr <tristan.mahr@wisc.edu>
+  ([ORCID](https://orcid.org/0000-0002-8890-5116))

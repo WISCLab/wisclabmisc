@@ -19,6 +19,7 @@ The first set of analyses considered each child’s mean speaking rate and
 intelligibility for each utterance length.
 
 ``` r
+
 library(tidyverse)
 data_model <- targets::tar_read("data_model_anon")
 data_model
@@ -58,6 +59,7 @@ where
 ## Correlations
 
 ``` r
+
 data_for_cors <- data_model |> 
   group_by(tocs_length) |> 
   mutate(
@@ -149,6 +151,7 @@ formula to use. Models were seeded using dates (`seed`) for
 reproducibility.
 
 ``` r
+
 library(splines)
 library(brms)
 fit_beta_model <- function(
@@ -306,6 +309,7 @@ fit_beta_model <- function(
 The models compared with in the manuscript were as follows:
 
 ``` r
+
 loo_comparison <- targets::tar_read("loo_comparison")
 labels <- tibble::tribble(
   ~model, ~random_effects,
@@ -331,14 +335,14 @@ loo_table_data |>
   knitr::kable()
 ```
 
-| model                      | random_effects                | elpd_diff | se_diff | elpd_loo | se_elpd_loo | p_loo | se_p_loo | looic | se_looic | loo_r2_mean | loo_r2_sd |
-|:---------------------------|:------------------------------|:----------|:--------|:---------|:------------|:------|:---------|:------|:---------|:------------|:----------|
-| model_rs_length            | 1 + length \| child           | 0.0       | 0.0     | 3814     | 49          | 852   | 20       | -7628 | 98       | 0.84        | 0.009     |
-| model_rs_length_plus_rate  | 1 + length + rate \| child    | -28.8     | 5.3     | 3785     | 50          | 784   | 20       | -7571 | 100      | 0.82        | 0.010     |
-| model_rs_monotonic_length  | 1 + monotonic-length \| child | -98.9     | 9.1     | 3715     | 51          | 523   | 16       | -7431 | 102      | 0.79        | 0.011     |
-| model_rs_rate              | 1 + rate \| child             | -101.4    | 9.8     | 3713     | 52          | 490   | 15       | -7426 | 104      | 0.78        | 0.011     |
-| model_main                 | 1 \| child                    | -107.2    | 9.7     | 3707     | 52          | 442   | 15       | -7414 | 104      | 0.78        | 0.011     |
-| model_rs_length_colon_rate | 1 + length:rate \| child      | -107.9    | 9.8     | 3706     | 52          | 479   | 15       | -7413 | 104      | 0.78        | 0.011     |
+| model | random_effects | elpd_diff | se_diff | elpd_loo | se_elpd_loo | p_loo | se_p_loo | looic | se_looic | loo_r2_mean | loo_r2_sd |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+| model_rs_length | 1 + length \| child | 0.0 | 0.0 | 3814 | 49 | 852 | 20 | -7628 | 98 | 0.84 | 0.009 |
+| model_rs_length_plus_rate | 1 + length + rate \| child | -28.8 | 5.3 | 3785 | 50 | 784 | 20 | -7571 | 100 | 0.82 | 0.010 |
+| model_rs_monotonic_length | 1 + monotonic-length \| child | -98.9 | 9.1 | 3715 | 51 | 523 | 16 | -7431 | 102 | 0.79 | 0.011 |
+| model_rs_rate | 1 + rate \| child | -101.4 | 9.8 | 3713 | 52 | 490 | 15 | -7426 | 104 | 0.78 | 0.011 |
+| model_main | 1 \| child | -107.2 | 9.7 | 3707 | 52 | 442 | 15 | -7414 | 104 | 0.78 | 0.011 |
+| model_rs_length_colon_rate | 1 + length:rate \| child | -107.9 | 9.8 | 3706 | 52 | 479 | 15 | -7413 | 104 | 0.78 | 0.011 |
 
 All models (except `model_rs_monotonic_length`) formula includes a
 categorical effect of utterance length `tocs_length`, speaking rate
@@ -356,6 +360,7 @@ The winning model on the basis of model comparison was `model_rs_length`
 (by-child length effects).
 
 ``` r
+
 model_rs_length <- targets::tar_read(model_rs_length) 
 summary(model_rs_length)
 #>  Family: beta 
@@ -457,6 +462,7 @@ out-of-sample value. To make things easier, I break the data into
 batches in a list.
 
 ``` r
+
 newdata <- tidyr::crossing(
   age_48 = (3:7) * 12 - 48,
   tocs_length = c("3", "4", "5", "6", "7"),
@@ -491,6 +497,7 @@ effects. I use an `rvar()` which allows me to write code for the 6000 x
 effects are centered at 0 so each row of newdata is given a mean of 0.
 
 ``` r
+
 cov <- model_rs_length |>
   VarCorr(summary = FALSE) |>
   _$child$cov |>
@@ -526,6 +533,7 @@ the logits into proportions and then average over the 1000 children for
 that draw.
 
 ``` r
+
 l <- newdata_batches |>
   lapply(tidybayes::add_linpred_rvars, model_rs_length, re_formula = NA) |>
   lapply(
@@ -542,6 +550,7 @@ l <- newdata_batches |>
 This part is time-consuming so I load in the precomputed value.
 
 ``` r
+
 targets::tar_read(marginal_means_model_rs_length)
 #> # A tibble: 50 × 6
 #>    age_48 tocs_length speaking_sps_3 child        .linpred     .marginal
@@ -570,6 +579,7 @@ For the within-child effects of rate, we use the item-level data for the
 5-, 6-, and 7-word utterances.
 
 ``` r
+
 data_model_by_item_anon <- targets::tar_read(data_model_by_item_anon)
 data_model_by_item_anon
 #> # A tibble: 11,282 × 18
@@ -603,6 +613,7 @@ New here are
 The fitted model was the following:
 
 ``` r
+
 model_logistic <- targets::tar_read(
   "model_rs_rate_ri_item_no_length_binom_mundlak"
 )
@@ -662,6 +673,7 @@ We can extract the posterior means of each child’s rate coefficient like
 so:
 
 ``` r
+
 # Posterior draws of the slopes
 child_slopes <- model_logistic |>
   coef(summary = FALSE) |>
@@ -692,6 +704,7 @@ each child’s observed speaking rate, get posterior expectations for each
 of those point and plot the mean of those expectations for each child.
 
 ``` r
+
 data_binom_rate_grid <- data_model_by_item_anon |>
   group_by(child, age_months, age_bin, age_48) |>
   reframe(

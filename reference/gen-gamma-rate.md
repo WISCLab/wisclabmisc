@@ -153,7 +153,7 @@ summary(m, type = "qr")
 #> Mu link function:  log
 #> Mu Coefficients:
 #>                         Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)              0.92763    0.04539  20.435  < 2e-16 ***
+#> (Intercept)              0.92763    0.04540  20.435  < 2e-16 ***
 #> ns(age_months, df = 3)1  0.14393    0.03919   3.672 0.000310 ***
 #> ns(age_months, df = 3)2  0.36779    0.10288   3.575 0.000441 ***
 #> ns(age_months, df = 3)3  0.20240    0.03780   5.355 2.38e-07 ***
@@ -175,7 +175,7 @@ summary(m, type = "qr")
 #> Nu Coefficients:
 #>                        Estimate Std. Error t value Pr(>|t|)  
 #> (Intercept)              -3.438      1.647  -2.088   0.0381 *
-#> ns(age_months, df = 1)    8.336      4.312   1.933   0.0547 .
+#> ns(age_months, df = 1)    8.336      4.312   1.933   0.0546 .
 #> ---
 #> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 #> 
@@ -211,10 +211,10 @@ m_traced <- fit_gen_gamma_gamlss(
   control = gamlss::gamlss.control(n.cyc = 15, trace = TRUE)
 )
 #> GAMLSS-RS iteration 1: Global Deviance = 185.9307 
-#> GAMLSS-RS iteration 2: Global Deviance = 185.2312 
-#> GAMLSS-RS iteration 3: Global Deviance = 184.9112 
-#> GAMLSS-RS iteration 4: Global Deviance = 184.7408 
-#> GAMLSS-RS iteration 5: Global Deviance = 184.6483 
+#> GAMLSS-RS iteration 2: Global Deviance = 185.2313 
+#> GAMLSS-RS iteration 3: Global Deviance = 184.9109 
+#> GAMLSS-RS iteration 4: Global Deviance = 184.7407 
+#> GAMLSS-RS iteration 5: Global Deviance = 184.6482 
 #> GAMLSS-RS iteration 6: Global Deviance = 184.5971 
 #> GAMLSS-RS iteration 7: Global Deviance = 184.5691 
 #> GAMLSS-RS iteration 8: Global Deviance = 184.553 
@@ -235,10 +235,10 @@ names(m$.user)
 log_mean_55 <- cbind(1, predict(m$.user$basis_mu, 55)) %*% coef(m)
 log_mean_55
 #>          [,1]
-#> [1,] 1.070221
+#> [1,] 1.070224
 exp(log_mean_55)
 #>          [,1]
-#> [1,] 2.916024
+#> [1,] 2.916033
 
 # But predict_gen_gamma_gamlss() does this work for us and also provides
 # centiles
@@ -268,7 +268,7 @@ centiles[centiles$age_months == 55, "mu"]
 #> 1  2.92
 exp(log_mean_55)
 #>          [,1]
-#> [1,] 2.916024
+#> [1,] 2.916033
 
 if(requireNamespace("ggplot2", quietly = TRUE)) {
   library(ggplot2)
