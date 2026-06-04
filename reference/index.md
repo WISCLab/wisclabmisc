@@ -105,3 +105,5 @@
 - [`data_features_consonants`](https://wisclab.github.io/wisclabmisc/reference/data_features_consonants.md)
   [`data_features_vowels`](https://wisclab.github.io/wisclabmisc/reference/data_features_consonants.md)
   : Phonetic features of consonants and vowels
+- [`data_tocs_items`](https://wisclab.github.io/wisclabmisc/reference/data_tocs_items.md)
+  : Items from the TOCS+ used by the WISC Lab

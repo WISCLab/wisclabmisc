@@ -37,6 +37,8 @@
   [`audit_poke()`](https://wisclab.github.io/wisclabmisc/reference/audit.md)
   and
   [`audit_unwrap()`](https://wisclab.github.io/wisclabmisc/reference/audit.md).
+- Add `data_tocs_items` as a reusable source of the items used in our
+  lab’s listening experiments.
 
 ## wisclabmisc 0.1.1
 
