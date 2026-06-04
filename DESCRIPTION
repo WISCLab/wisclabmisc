@@ -6,8 +6,7 @@ Authors@R:
     person("Tristan", "Mahr", , "tristan.mahr@wisc.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8890-5116"))
 Description: A collection of 'R' functions for use (and re-use) across
-    'WiscLab' projects. These are analysis or presentation oriented
-    functions--that is, they are not for data reading or data cleaning.
+    'WiscLab' projects.
 License: MIT + file LICENSE
 URL: https://github.com/wisclab/wisclabmisc,
     https://wisclab.github.io/wisclabmisc/
