@@ -19,6 +19,8 @@
   applications on the underlying data. These are designed for validating vectors 
   (e.g., filenames). Functions consist of `audit_wrap()`, `audit_peek()`, 
   `audit_poke()` and `audit_unwrap()`.
+* Add `data_tocs_items` as a reusable source of the items used in our lab's 
+  listening experiments.
 
 # wisclabmisc 0.1.1
 
