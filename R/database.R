@@ -63,8 +63,8 @@ print_duckdb <- function(object) {
 #' @examples
 #' library(dplyr)
 #' db <- duckdb::duckdb() |>
-#'   DBI::dbConnect() |>
-#'   withr::local_db_connection()
+#'   DBI::dbConnect()
+#' db
 #'
 #' DBI::dbWriteTable(db, "mtcars_g1", mtcars[mtcars$cyl == 4, ])
 #' DBI::dbWriteTable(db, "mtcars_g2", mtcars[mtcars$cyl == 6, ])
@@ -78,7 +78,10 @@ print_duckdb <- function(object) {
 #'   count(.source)
 #' r
 #'
+#' # the query is several UNIONs
 #' show_query(r)
+#'
+#' DBI::dbDisconnect(db, shutdown = TRUE)
 tbl_bind <- function(src, table_selection, id_name = ".source") {
   f_include_id_name <- function(nm) {
     has_name <- id_name %in% DBI::dbListFields(src, nm)
@@ -90,7 +93,7 @@ tbl_bind <- function(src, table_selection, id_name = ".source") {
   }
   f_exclude_id_name <- function(nm) tbl(src, nm)
 
-  rlang::check_installed(c("DBI", "duckdb"))
+  rlang::check_installed(c("DBI"))
 
   names <- DBI::dbListTables(src)
   names <- stats::setNames(names, names)

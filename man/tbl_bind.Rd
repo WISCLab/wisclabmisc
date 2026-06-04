@@ -33,8 +33,8 @@ To manually combine two tbls \code{x} and \code{y}, use \code{\link[dplyr:union_
 \examples{
 library(dplyr)
 db <- duckdb::duckdb() |>
-  DBI::dbConnect() |>
-  withr::local_db_connection()
+  DBI::dbConnect()
+db
 
 DBI::dbWriteTable(db, "mtcars_g1", mtcars[mtcars$cyl == 4, ])
 DBI::dbWriteTable(db, "mtcars_g2", mtcars[mtcars$cyl == 6, ])
@@ -48,6 +48,9 @@ r <- db |>
   count(.source)
 r
 
+# the query is several UNIONs
 show_query(r)
+
+DBI::dbDisconnect(db, shutdown = TRUE)
 }
 \concept{database}
