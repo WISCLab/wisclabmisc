@@ -21,6 +21,7 @@
   `audit_poke()` and `audit_unwrap()`.
 * Add `data_tocs_items` as a reusable source of the items used in our lab's 
   listening experiments.
+* Add database helpers: `tbl_bind()`.
 
 # wisclabmisc 0.1.1
 
