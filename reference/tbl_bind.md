@@ -47,30 +47,49 @@ To manually combine two tbls `x` and `y`, use
 ``` r
 library(dplyr)
 db <- duckdb::duckdb() |>
-  DBI::dbConnect() |>
-  withr::local_db_connection()
+  DBI::dbConnect()
+db
+#> <duckdb_connection 26300 driver=<duckdb_driver dbdir=':memory:' read_only=FALSE bigint=numeric>>
 
 DBI::dbWriteTable(db, "mtcars_g1", mtcars[mtcars$cyl == 4, ])
-#> Error in dbExistsTable(conn, name): Invalid connection
 DBI::dbWriteTable(db, "mtcars_g2", mtcars[mtcars$cyl == 6, ])
-#> Error in dbExistsTable(conn, name): Invalid connection
 DBI::dbWriteTable(db, "mtcars_g3", mtcars[mtcars$cyl == 8, ])
-#> Error in dbExistsTable(conn, name): Invalid connection
 DBI::dbWriteTable(db, "trees", trees)
-#> Error in dbExistsTable(conn, name): Invalid connection
 
 DBI::dbListTables(db)
-#> Error in dbSendQuery(conn, statement, ...): Invalid connection
-#> ℹ Context: rapi_prepare
+#> [1] "mtcars_g1" "mtcars_g2" "mtcars_g3" "trees"    
 
 r <- db |>
   tbl_bind(starts_with("mtcars")) |>
   count(.source)
-#> Error in dbSendQuery(conn, statement, ...): Invalid connection
-#> ℹ Context: rapi_prepare
 r
-#> Error: object 'r' not found
+#> # Source:   SQL [?? x 2]
+#> # Database: DuckDB 1.5.2 [unknown@Linux 6.17.0-1015-azure:R 4.6.0/:memory:]
+#>   .source       n
+#>   <chr>     <dbl>
+#> 1 mtcars_g3    14
+#> 2 mtcars_g1    11
+#> 3 mtcars_g2     7
 
+# the query is several UNIONs
 show_query(r)
-#> Error: object 'r' not found
+#> <SQL>
+#> SELECT ".source", COUNT(*) AS n
+#> FROM (
+#>   SELECT mtcars_g1.*, 'mtcars_g1' AS ".source"
+#>   FROM mtcars_g1
+#> 
+#>   UNION ALL
+#> 
+#>   SELECT mtcars_g2.*, 'mtcars_g2' AS ".source"
+#>   FROM mtcars_g2
+#> 
+#>   UNION ALL
+#> 
+#>   SELECT mtcars_g3.*, 'mtcars_g3' AS ".source"
+#>   FROM mtcars_g3
+#> ) q01
+#> GROUP BY ".source"
+
+DBI::dbDisconnect(db, shutdown = TRUE)
 ```
