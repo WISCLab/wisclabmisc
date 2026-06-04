@@ -419,8 +419,8 @@ loo_compare(m1, m2, m3) |>
   print(simplify = FALSE)
 #>    elpd_diff se_diff elpd_loo se_elpd_loo p_loo  se_p_loo looic  se_looic
 #> m1    0.0       0.0   248.6     14.8         3.2    0.4   -497.3   29.7  
-#> m2   -0.6       2.1   248.0     14.7         4.8    0.6   -496.1   29.4  
-#> m3   -4.1       2.5   244.5     14.9         6.5    0.7   -489.0   29.8
+#> m2   -0.6       2.0   248.0     14.7         4.8    0.6   -496.1   29.4  
+#> m3   -3.9       2.5   244.8     14.9         6.3    0.7   -489.6   29.8
 ```
 
 ## The full workflow

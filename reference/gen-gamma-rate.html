@@ -194,7 +194,7 @@ these are multiplied by model coefficients.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Mu link function:  log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Mu Coefficients:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                         Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)              0.92763    0.04539  20.435  &lt; 2e-16 ***</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)              0.92763    0.04540  20.435  &lt; 2e-16 ***</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ns(age_months, df = 3)1  0.14393    0.03919   3.672 0.000310 ***</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ns(age_months, df = 3)2  0.36779    0.10288   3.575 0.000441 ***</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ns(age_months, df = 3)3  0.20240    0.03780   5.355 2.38e-07 ***</span>
@@ -216,7 +216,7 @@ these are multiplied by model coefficients.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Nu Coefficients:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                        Estimate Std. Error t value Pr(&gt;|t|)  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)              -3.438      1.647  -2.088   0.0381 *</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ns(age_months, df = 1)    8.336      4.312   1.933   0.0547 .</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ns(age_months, df = 1)    8.336      4.312   1.933   0.0546 .</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -252,10 +252,10 @@ these are multiplied by model coefficients.</p>
 <span class="r-in"><span>  control <span class="op">=</span> <span class="fu">gamlss</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gamlss/man/gamlss.control.html" class="external-link">gamlss.control</a></span><span class="op">(</span>n.cyc <span class="op">=</span> <span class="fl">15</span>, trace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 1: Global Deviance = 185.9307 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 2: Global Deviance = 185.2312 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 3: Global Deviance = 184.9112 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 4: Global Deviance = 184.7408 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 5: Global Deviance = 184.6483 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 2: Global Deviance = 185.2313 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 3: Global Deviance = 184.9109 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 4: Global Deviance = 184.7407 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 5: Global Deviance = 184.6482 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 6: Global Deviance = 184.5971 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 7: Global Deviance = 184.5691 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> GAMLSS-RS iteration 8: Global Deviance = 184.553 </span>
@@ -276,10 +276,10 @@ these are multiplied by model coefficients.</p>
 <span class="r-in"><span><span class="va">log_mean_55</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">.user</span><span class="op">$</span><span class="va">basis_mu</span>, <span class="fl">55</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">log_mean_55</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,1]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 1.070221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 1.070224</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">log_mean_55</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,1]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 2.916024</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 2.916033</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># But predict_gen_gamma_gamlss() does this work for us and also provides</span></span></span>
 <span class="r-in"><span><span class="co"># centiles</span></span></span>
@@ -309,7 +309,7 @@ these are multiplied by model coefficients.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>  2.92</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">log_mean_55</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,1]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 2.916024</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 2.916033</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>

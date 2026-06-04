@@ -39,6 +39,8 @@
   [`audit_unwrap()`](https://wisclab.github.io/wisclabmisc/reference/audit.md).
 - Add `data_tocs_items` as a reusable source of the items used in our
   lab’s listening experiments.
+- Add database helpers:
+  [`tbl_bind()`](https://wisclab.github.io/wisclabmisc/reference/tbl_bind.md).
 
 ## wisclabmisc 0.1.1
 

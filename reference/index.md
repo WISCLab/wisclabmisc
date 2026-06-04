@@ -88,8 +88,13 @@
   : Rename file basenames using functions
 - [`join_to_split()`](https://wisclab.github.io/wisclabmisc/reference/join_to_split.md)
   : Join data onto resampled IDs
+- [`print_duckdb()`](https://wisclab.github.io/wisclabmisc/reference/print_duckdb.md)
+  : Custom function for printing duckdb database connections
 - [`skip_block()`](https://wisclab.github.io/wisclabmisc/reference/skip_block.md)
   : Skip a block of code without executing it
+- [`tbl_bind()`](https://wisclab.github.io/wisclabmisc/reference/tbl_bind.md)
+  : Select and row-bind multiple database tables from the same source
+  together
 
 ## Datasets 🗺️
 
