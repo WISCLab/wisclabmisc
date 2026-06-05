@@ -71,12 +71,16 @@ path <- file.path(
 )
 
 updated <- file_replace_name(path, "report_", "report-", .dry_run = TRUE)
-#> Planned changes:
-#> ! report_1.csv -> report-1.csv (overwrites an existing file)
+#> Rename plan:
+#>   report_1.csv -> report-1.csv
 #>   report_2.csv -> report-2.csv
 
 # Collisions are detected
 updated <- file_replace_name(path, "report_\\d", "report-1", .dry_run = TRUE)
-#> Planned changes:
+#> Warning: Cannot safely rename files
+#> ✖ 2 files have naming collisions
+#> • Ensure that files do not rename to the same destination
+#> 
+#> Rename plan:
 #> ✖ (report_1.csv, report_2.csv) -> report-1.csv (naming collision)
 ```

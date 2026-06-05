@@ -117,14 +117,18 @@ undergoes string replacement).</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">updated</span> <span class="op">&lt;-</span> <span class="fu">file_replace_name</span><span class="op">(</span><span class="va">path</span>, <span class="st">"report_"</span>, <span class="st">"report-"</span>, .dry_run <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Planned changes:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> report_1.csv -&gt; report-1.csv <span style="font-style: italic;">(overwrites an existing file)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Rename plan:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   report_1.csv -&gt; report-1.csv</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   report_2.csv -&gt; report-2.csv</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Collisions are detected</span></span></span>
 <span class="r-in"><span><span class="va">updated</span> <span class="op">&lt;-</span> <span class="fu">file_replace_name</span><span class="op">(</span><span class="va">path</span>, <span class="st">"report_\\d"</span>, <span class="st">"report-1"</span>, .dry_run <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Planned changes:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> (report_1.csv, report_2.csv) -&gt; report-1.csv <span style="font-style: italic;">(naming collision)</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot safely rename files</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> 2 files have naming collisions</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Ensure that files do not rename to the same destination</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Rename plan:</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> (report_1.csv, report_2.csv) -&gt; report-1.csv <span style="font-style: italic;">(naming collision)</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

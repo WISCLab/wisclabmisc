@@ -49,7 +49,7 @@ library(dplyr)
 db <- duckdb::duckdb() |>
   DBI::dbConnect()
 db
-#> <duckdb_connection 26300 driver=<duckdb_driver dbdir=':memory:' read_only=FALSE bigint=numeric>>
+#> <duckdb_connection 91d00 driver=<duckdb_driver dbdir=':memory:' read_only=FALSE bigint=numeric>>
 
 DBI::dbWriteTable(db, "mtcars_g1", mtcars[mtcars$cyl == 4, ])
 DBI::dbWriteTable(db, "mtcars_g2", mtcars[mtcars$cyl == 6, ])
