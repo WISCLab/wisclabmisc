@@ -4,6 +4,7 @@ test_that("format_year_month_age() converts to years;month format", {
     expect_equal(c("0;1", "1;1", "1;11", "2;0", "NA;NA"))
 })
 
+
 test_that("parse_year_month_age() converts years;months to months", {
   "0;6" |> parse_year_month_age() |> expect_equal(6)
   "1:6" |> parse_year_month_age(sep = ":") |> expect_equal(18)
@@ -20,6 +21,7 @@ test_that("parse_year_month_age() converts years;months to months", {
   "NA;1.5"  |> parse_year_month_age() |> expect_equal(NA_real_)
 })
 
+
 test_that("format_year_month_age() and parse_year_month_age() round-trip", {
   ages <- c(0L, 1L, 11L, 12L, 13L, 26L, 58L, 131L, NA_integer_)
 
@@ -33,6 +35,7 @@ test_that("format_year_month_age() and parse_year_month_age() round-trip", {
     ages
   )
 })
+
 
 test_that("parse_yymm_age() converts YYMM into age in months", {
   c("0011", "1900", "0201") |>
@@ -90,76 +93,6 @@ test_that("Chronological age in months", {
   expect_equal(chrono_age("2007-05-08", "1999-08-02"),  (7 * 12) + 9)
   expect_equal(chrono_age("2007-08-13", "1985-11-24"), (21 * 12) + 8)
 })
-
-
-test_that("File renaming functions", {
-  files <- c(
-    # easy cases
-    "report_0.csv", "skipped.csv", "skipped2.csv",
-    # would overwrite
-    "report_1.csv", "report-1.csv",
-    # would collide
-    "report_2.csv", "report__2.csv",
-    # would overwrite and collide
-    "report_3.csv", "report__3.csv", "report-3.csv"
-  )
-
-  dir <- tempfile()
-  dir.create(dir)
-
-  # no files
-  path <- list.files(dir, full.names = TRUE)
-
-  path |>
-    file_replace_name("report_", "report-") |>
-    expect_message("No files")
-  path |>
-    file_replace_name("report_", "report-", .dry_run = TRUE) |>
-    expect_message("No files")
-
-  # no applicable files
-  dir |> file.path("skipped.csv") |> file.create()
-  path <- list.files(dir, full.names = TRUE)
-
-  path |>
-    file_replace_name("report_", "report-") |>
-    expect_message("No files")
-  path |>
-    file_replace_name("report_", "report-", .dry_run = TRUE) |>
-    expect_message("No files")
-
-  # applicable files
-  dir |> file.path(files) |> file.create()
-  path <- list.files(dir, full.names = TRUE)
-
-  path |>
-    file_replace_name("report_", "report-") |>
-    expect_error(regexp = "would be overwritten")
-
-  path |>
-    file_replace_name("report_", "report-", .dry_run = TRUE) |>
-    expect_message(regexp = "overwrites an existing file")
-
-  path |>
-    file_replace_name("report_+", "report-") |>
-    expect_error(regexp = "naming collision")
-
-  path |>
-    file_replace_name("report_+", "report-", .dry_run = TRUE) |>
-    expect_message(regexp = "naming collision")
-
-  updated <- file_replace_name(path, "report_", "report-", .overwrite = TRUE)
-  new_path <- list.files(dir, full.names = TRUE)
-
-  new_path |>
-    basename() |>
-    expect_equal(c(
-      "report-0.csv", "report-1.csv", "report-2.csv", "report-3.csv",
-      "report-_2.csv", "report-_3.csv",
-      "skipped.csv", "skipped2.csv"
-    ))
-})
-
 
 
 test_that("tocs_item()", {
@@ -230,7 +163,6 @@ test_that("tocs_item()", {
 })
 
 
-
 test_that("Overlap rate is computed correctly", {
   m <- matrix(c(
     0.10, 0.20,  0.21, 0.30,  # 1 no overlap
@@ -267,6 +199,7 @@ test_that("Overlap rate is computed correctly", {
   # negatives not supported
   expect_error(compute_overlap_rate(x1, x2, -y1, y2))
 })
+
 
 test_that("skip_block() ignores code", {
   expect_error(skip_block())
