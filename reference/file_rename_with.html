@@ -42,7 +42,7 @@ string-transforming function."><link rel="stylesheet" href="https://cdn.jsdelivr
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Rename file basenames using functions</h1>
-      <small class="dont-index">Source: <a href="https://github.com/wisclab/wisclabmisc/blob/main/R/utils.R" class="external-link"><code>R/utils.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/wisclab/wisclabmisc/blob/main/R/utils-files.R" class="external-link"><code>R/utils-files.R</code></a></small>
       <div class="d-none name"><code>file_rename_with.Rd</code></div>
     </div>
 
@@ -58,11 +58,11 @@ string-transforming function.</p>
 <span>  <span class="va">path</span>,</span>
 <span>  <span class="va">pattern</span>,</span>
 <span>  <span class="va">replacement</span>,</span>
-<span>  .dry_run <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  .dry_run <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  .overwrite <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">file_rename_with</span><span class="op">(</span><span class="va">path</span>, <span class="va">.fn</span>, <span class="va">...</span>, .dry_run <span class="op">=</span> <span class="cn">FALSE</span>, .overwrite <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">file_rename_with</span><span class="op">(</span><span class="va">path</span>, <span class="va">.fn</span>, <span class="va">...</span>, .dry_run <span class="op">=</span> <span class="cn">TRUE</span>, .overwrite <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -78,8 +78,8 @@ string-transforming function.</p>
 
 
 <dt id="arg--dry-run">.dry_run<a class="anchor" aria-label="anchor" href="#arg--dry-run"></a></dt>
-<dd><p>when <code>FALSE</code> (the default), files are renamed. When <code>TRUE</code>,
-no files are renamed but the affected files are printed out.</p></dd>
+<dd><p>when <code>FALSE</code>, files are renamed. When <code>TRUE</code> (the default),
+no files are renamed but the rename plan is printed.</p></dd>
 
 
 <dt id="arg--overwrite">.overwrite<a class="anchor" aria-label="anchor" href="#arg--overwrite"></a></dt>
@@ -88,7 +88,7 @@ overwriting files is opt-in.</p></dd>
 
 
 <dt id="arg--fn">.fn<a class="anchor" aria-label="anchor" href="#arg--fn"></a></dt>
-<dd><p>function to call file paths</p></dd>
+<dd><p>function to apply to file basenames</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -97,14 +97,15 @@ overwriting files is opt-in.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>the contents of <code>paths</code> with updated file names. Duplicated elements
-are removed. This function throws an error if a name collision is detected
-(where two files are both renamed into the same target path).</p>
+    <p>a dataframe describing the file-renaming plan. Files that would
+overwrite an existing file are skipped unless <code>.overwrite = TRUE</code>. This
+function throws an error if a name collision is detected, where two files
+are both renamed into the same target path.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Only the basename of the file (returned by <code><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename()</a></code>
-undergoes string replacement).</p>
+    <p>Only the basename of the file (returned by <code><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename()</a></code>)
+undergoes string replacement.</p>
     </div>
 
     <div class="section level2">
@@ -129,6 +130,11 @@ undergoes string replacement).</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Rename plan:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> (report_1.csv, report_2.csv) -&gt; report-1.csv <span style="font-style: italic;">(naming collision)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Doing nothing</span></span></span>
+<span class="r-in"><span><span class="va">updated</span> <span class="op">&lt;-</span> <span class="fu">file_rename_with</span><span class="op">(</span><span class="va">path</span>, <span class="va">identity</span>, .dry_run <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Rename plan:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   No files would be renamed.</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

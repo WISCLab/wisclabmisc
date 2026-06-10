@@ -12,11 +12,11 @@ file_replace_name(
   path,
   pattern,
   replacement,
-  .dry_run = FALSE,
+  .dry_run = TRUE,
   .overwrite = FALSE
 )
 
-file_rename_with(path, .fn, ..., .dry_run = FALSE, .overwrite = FALSE)
+file_rename_with(path, .fn, ..., .dry_run = TRUE, .overwrite = FALSE)
 ```
 
 ## Arguments
@@ -32,8 +32,8 @@ file_rename_with(path, .fn, ..., .dry_run = FALSE, .overwrite = FALSE)
 
 - .dry_run:
 
-  when `FALSE` (the default), files are renamed. When `TRUE`, no files
-  are renamed but the affected files are printed out.
+  when `FALSE`, files are renamed. When `TRUE` (the default), no files
+  are renamed but the rename plan is printed.
 
 - .overwrite:
 
@@ -42,7 +42,7 @@ file_rename_with(path, .fn, ..., .dry_run = FALSE, .overwrite = FALSE)
 
 - .fn:
 
-  function to call file paths
+  function to apply to file basenames
 
 - ...:
 
@@ -50,15 +50,16 @@ file_rename_with(path, .fn, ..., .dry_run = FALSE, .overwrite = FALSE)
 
 ## Value
 
-the contents of `paths` with updated file names. Duplicated elements are
-removed. This function throws an error if a name collision is detected
-(where two files are both renamed into the same target path).
+a dataframe describing the file-renaming plan. Files that would
+overwrite an existing file are skipped unless `.overwrite = TRUE`. This
+function throws an error if a name collision is detected, where two
+files are both renamed into the same target path.
 
 ## Details
 
 Only the basename of the file (returned by
-[`basename()`](https://rdrr.io/r/base/basename.html) undergoes string
-replacement).
+[`basename()`](https://rdrr.io/r/base/basename.html)) undergoes string
+replacement.
 
 ## Examples
 
@@ -83,4 +84,9 @@ updated <- file_replace_name(path, "report_\\d", "report-1", .dry_run = TRUE)
 #> 
 #> Rename plan:
 #> ✖ (report_1.csv, report_2.csv) -> report-1.csv (naming collision)
+
+# Doing nothing
+updated <- file_rename_with(path, identity, .dry_run = TRUE)
+#> Rename plan:
+#>   No files would be renamed.
 ```
