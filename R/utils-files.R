@@ -57,8 +57,6 @@ file_replace_name <- function(
 }
 
 
-
-
 #' @rdname file_rename_with
 #' @export
 file_rename_with <- function(
@@ -155,8 +153,6 @@ prepare_file_rename_message <- function(rename_plan, .dry_run, .overwrite) {
 }
 
 
-
-
 prepare_file_rename_plan <- function(path, path_new, .overwrite) {
   is_duplicated <- function(x) duplicated(x) | duplicated(x, fromLast = TRUE)
 
@@ -250,9 +246,6 @@ prepare_rename_plan_bullets <- function(rename_plan) {
   c("Rename plan:", changes)
 }
 
-
-
-
 find_rename_chains <- function(rename_plan) {
   changed <- rename_plan[rename_plan$is_changed, , drop = FALSE]
   from <- as.character(changed$path)
@@ -316,4 +309,202 @@ format_rename_chains <- function(rename_plan) {
 
   names(bullets) <- " "
   bullets
+}
+
+
+
+
+
+
+dir_sync_down <- function(
+    path,
+    path_new,
+    .dry_run = TRUE,
+    .delete = FALSE,
+    .compare = c("metadata", "md5", "xxhash")
+) {
+  # l <- make_demo_sync_dirs()
+  # path <- l$from
+  # path_new <- l$to
+
+  .compare <- rlang::arg_match(.compare)
+  path <- fs::path_abs(path)
+  path_new <- fs::path_abs(path_new)
+  if (!.dry_run) fs::dir_create(path_new)
+
+  if (!fs::dir_exists(path)) {
+    cli::cli_abort("{.arg path} must be an existing directory.")
+  }
+
+  sync_plan <- prepare_dir_sync_plan(
+    path = path,
+    path_new = path_new,
+    .delete = .delete,
+    .compare = .compare
+  )
+
+  sync_newer <- sync_plan |>
+    dplyr::filter(.data$action %in% c("copy", "overwrite"))
+  sync_extra <- sync_plan |>
+    dplyr::filter(.data$action %in% c("ignore", "delete"))
+
+
+  if (nrow(sync_newer) == 0 && nrow(sync_extra) == 0) {
+    cli::cli_inform(
+      c("v" = "Skipping {.file {path_new}}")
+    )
+  } else {
+    n_c <- sum(sync_newer[["action"]] == "copy")
+    n_w <- sum(sync_newer[["action"]] == "overwrite")
+    n_x <- nrow(sync_extra)
+    action_x <- if (.delete) "delete" else "ignore"
+
+    main_action <- if (.dry_run) {
+      "Dry run: 🔃 Would update {.file {path_new}}"
+    } else {
+      "🔃 Updating {.file {path_new}}"
+    }
+    cli::cli_inform(
+      c(
+        main_action,
+        " " = "{n_c} new file{?s} (copy), {n_w} out-of-sync file{?s} (overwrite), {n_x} extra file{?s} ({action_x})"
+      )
+    )
+
+    if (.dry_run) {
+      return(invisible(sync_plan))
+    }
+
+    if (nrow(sync_extra) && .delete) {
+      fs::file_delete(sync_extra$copy_to)
+    }
+    if (nrow(sync_newer)) {
+      files_from <- sync_newer$copy_from
+      files_to <- sync_newer$copy_to
+      fs::dir_create(fs::path_dir(files_to))
+      fs::file_copy(files_from, files_to, overwrite = TRUE)
+    }
+  }
+
+  invisible(sync_plan)
+}
+
+prepare_dir_sync_plan <- function(
+    path,
+    path_new,
+    .delete = FALSE,
+    .compare = c("metadata", "md5", "xxhash")
+) {
+  .compare <- rlang::arg_match(.compare)
+
+  info_from <- collect_dir_file_info(path, side = "from")
+  info_to <- collect_dir_file_info(path_new, side = "to")
+
+  plan <- info_from |>
+    dplyr::full_join(info_to, by = "path_rel")
+
+  # i.e., extra files
+  from_missing <- is.na(plan$path_from)
+  # i.e., missing files
+  to_missing <- is.na(plan$path_to)
+
+  size_differs <- !from_missing & !to_missing & plan$size_from != plan$size_to
+  mtime_differs <- !from_missing & !to_missing & plan$mtime_from != plan$mtime_to
+
+  plan$action <- "none"
+  plan$reason <- "unchanged"
+
+  plan$action[to_missing] <- "copy"
+  plan$reason[to_missing] <- "missing"
+
+  plan$action[size_differs | mtime_differs] <- "overwrite"
+  plan$reason[size_differs] <- "size differs"
+  plan$reason[!size_differs & mtime_differs] <- "mtime differs"
+
+  plan$action[from_missing] <- if (.delete) "delete" else "ignore"
+  plan$reason[from_missing] <- if (.delete) "extra file" else "delete disabled"
+
+  plan <- compare_file_hashes_in_sync_plan(plan, .compare = .compare)
+  plan$copy_from <- fs::path(path, plan$path_rel)
+  plan$copy_to <- fs::path(path_new, plan$path_rel)
+
+  plan[, c(
+    "path_rel",
+    "action",
+    "reason",
+    "size_from",
+    "size_to",
+    "mtime_from",
+    "mtime_to",
+    "path_from",
+    "path_to",
+    "copy_from",
+    "copy_to"
+  )]
+}
+
+
+collect_dir_file_info <- function(path, side = c("from", "to")) {
+  side <- rlang::arg_match(side)
+
+  if (!fs::dir_exists(path)) {
+    out <- tibble::tibble(
+      path_rel = fs::path(),
+      path = fs::path(),
+      size = numeric(),
+      mtime = as.POSIXct(character())
+    )
+  } else {
+    info <- fs::dir_info(path, recurse = TRUE, type = "file")
+    out <- tibble::tibble(
+      path_rel = fs::path_rel(info$path, start = path),
+      path = fs::path(as.character(info$path)),
+      size = as.numeric(info$size),
+      mtime = info$modification_time
+    )
+  }
+  s <- c("path", "size", "mtime")
+  names(out)[names(out) %in% s] <- paste0(s, "_", side)
+
+  out
+}
+
+
+compare_file_hashes_in_sync_plan <- function(plan, .compare = c("metadata", "md5", "xxhash")) {
+  .compare <- rlang::arg_match(.compare)
+  if (.compare == "metadata") return(plan)
+
+  comparable <- !is.na(plan$path_from) & !is.na(plan$path_to)
+  if (!any(comparable)) return(plan)
+
+  hash_from <- file_hash(plan$path_from[comparable], .compare = .compare)
+  hash_to <- file_hash(plan$path_to[comparable], .compare = .compare)
+  hash_differs <- hash_from != hash_to
+
+  rows <- which(comparable)
+
+  plan$action[rows[hash_differs]] <- "overwrite"
+  plan$reason[rows[hash_differs]] <- "hash differs"
+
+  plan$action[rows[!hash_differs]] <- "none"
+  plan$reason[rows[!hash_differs]] <- "unchanged"
+
+  plan
+}
+
+file_hash <- function(path, .compare = c("md5", "xxhash")) {
+  .compare <- rlang::arg_match(.compare)
+
+  if (.compare == "xxhash") {
+    rlang::check_installed(
+      "xxhashlite",
+      reason = "to use `.compare = \"xxhash\"`"
+    )
+  }
+
+  switch(
+    .compare,
+    md5 = unname(tools::md5sum(path)),
+    xxhash = xxhashlite::xxhash_file(path, algo = "xxh64")
+  )
 }
