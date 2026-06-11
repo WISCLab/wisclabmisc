@@ -83,6 +83,8 @@
   : Set default arguments for brms model fitting
 - [`compute_overlap_rate()`](https://wisclab.github.io/wisclabmisc/reference/compute_overlap_rate.md)
   : Compute overlap rate for (phoneme alignment) intervals
+- [`dir_sync_down()`](https://wisclab.github.io/wisclabmisc/reference/dir_sync_down.md)
+  : Sync one directory down into another
 - [`file_replace_name()`](https://wisclab.github.io/wisclabmisc/reference/file_rename_with.md)
   [`file_rename_with()`](https://wisclab.github.io/wisclabmisc/reference/file_rename_with.md)
   : Rename file basenames using functions

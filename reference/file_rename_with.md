@@ -88,5 +88,5 @@ updated <- file_replace_name(path, "report_\\d", "report-1", .dry_run = TRUE)
 # Doing nothing
 updated <- file_rename_with(path, identity, .dry_run = TRUE)
 #> Rename plan:
-#>   No files would be renamed.
+#>   No files need to be renamed.
 ```

@@ -41,6 +41,10 @@
   lab’s listening experiments.
 - Add database helpers:
   [`tbl_bind()`](https://wisclab.github.io/wisclabmisc/reference/tbl_bind.md).
+- Add file helpers:
+  [`dir_sync_down()`](https://wisclab.github.io/wisclabmisc/reference/dir_sync_down.md),
+  [`file_rename_with()`](https://wisclab.github.io/wisclabmisc/reference/file_rename_with.md),
+  [`file_replace_name()`](https://wisclab.github.io/wisclabmisc/reference/file_rename_with.md).
 
 ## wisclabmisc 0.1.1
 
