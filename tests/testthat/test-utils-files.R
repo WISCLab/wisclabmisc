@@ -3,11 +3,11 @@ test_that("file_replace_name() works on empty vectors", {
 
   path |>
     file_replace_name("report_", "report-", .dry_run = FALSE) |>
-    expect_message("No files were")
+    expect_message("No files need")
 
   path |>
     file_replace_name("report_", "report-", .dry_run = TRUE) |>
-    expect_message("No files would")
+    expect_message("No files need")
 })
 
 
@@ -39,11 +39,11 @@ test_that("file_replace_name() works when nothing would change", {
 
   path |>
     file_replace_name("report_", "report-", .dry_run = FALSE) |>
-    expect_message("No files were")
+    expect_message("No files need")
 
   path |>
     file_replace_name("report_", "report-", .dry_run = TRUE) |>
-    expect_message("No files would")
+    expect_message("No files need")
 })
 
 
@@ -110,12 +110,14 @@ test_that("file_replace_name() handles overwrites", {
     expect_message(regexp = "overwrites an existing")
 
   path |>
-    file_replace_name("report-_", "report-", .dry_run = FALSE, .overwrite = TRUE)
+    file_replace_name("report-_", "report-", .dry_run = FALSE, .overwrite = TRUE) |>
+    expect_message()
 
   path <- list.files(dir, full.names = TRUE)
 
   path |>
-    file_replace_name("report_", "report-", .dry_run = FALSE, .overwrite = TRUE)
+    file_replace_name("report_", "report-", .dry_run = FALSE, .overwrite = TRUE) |>
+    expect_message()
 
   path <- list.files(dir, full.names = TRUE)
 
@@ -128,20 +130,6 @@ test_that("file_replace_name() handles overwrites", {
 })
 
 
-test_that("file_rename demo", {
-  testthat::skip(message = "demo")
-  dir <- tempfile()
-  dir.create(dir)
-  path <-     c("a1", "b1", "c1", "cc1", "d", "f", "g")
-  path_new <- c("a2", "b2", "c2",  "c2", "e", "g", "h")
-  dir |> file.path(path) |> file.create()
-
-  file_rename_impl(path, path_new, .overwrite = FALSE, .dry_run = TRUE)
-
-})
-
-
-
 
 
 test_that("dir_sync_down() works when destination does not exist", {
@@ -150,12 +138,14 @@ test_that("dir_sync_down() works when destination does not exist", {
   fs::dir_create(from)
   writeLines("a", fs::path(from, "a.txt"))
 
-  plan <- dir_sync_down(from, to, .dry_run = TRUE)
+  plan <- dir_sync_down(from, to, .dry_run = TRUE) |>
+    suppressMessages()
 
   expect_true(any(plan$action == "copy"))
   expect_false(fs::dir_exists(to))
 
-  dir_sync_down(from, to, .dry_run = FALSE)
+  dir_sync_down(from, to, .dry_run = FALSE) |>
+    suppressMessages()
 
   expect_true(fs::file_exists(fs::path(to, "a.txt")))
 })
@@ -170,19 +160,23 @@ test_that("dir_sync_down() skips extra files unless delete is allowed", {
   writeLines("a", fs::path(from, "a.txt"))
   writeLines("extra", fs::path(to, "extra.txt"))
 
-  plan <- dir_sync_down(from, to, .dry_run = TRUE, .delete = FALSE)
+  plan <- dir_sync_down(from, to, .dry_run = TRUE, .delete = FALSE) |>
+    suppressMessages()
 
   expect_true(any(plan$action == "ignore"))
   expect_true(any(plan$reason == "delete disabled"))
 
-  dir_sync_down(from, to, .dry_run = FALSE, .delete = FALSE)
+  dir_sync_down(from, to, .dry_run = FALSE, .delete = FALSE) |>
+    suppressMessages()
 
   expect_true(fs::file_exists(fs::path(to, "extra.txt")))
 
-  dir_sync_down(from, to, .dry_run = FALSE, .delete = TRUE)
+  dir_sync_down(from, to, .dry_run = FALSE, .delete = TRUE) |>
+    suppressMessages()
 
   expect_false(fs::file_exists(fs::path(to, "extra.txt")))
 })
+
 
 test_that("dir_sync_down() overwrites changed files", {
   from <- tempfile()
@@ -193,11 +187,13 @@ test_that("dir_sync_down() overwrites changed files", {
   writeLines("new", fs::path(from, "a.txt"))
   writeLines("old", fs::path(to, "a.txt"))
 
-  plan <- dir_sync_down(from, to, .dry_run = TRUE, .compare = "md5")
+  plan <- dir_sync_down(from, to, .dry_run = TRUE, .compare = "md5") |>
+    suppressMessages()
 
   expect_true(any(plan$action == "overwrite"))
 
-  dir_sync_down(from, to, .dry_run = FALSE, .compare = "md5")
+  dir_sync_down(from, to, .dry_run = FALSE, .compare = "md5") |>
+    suppressMessages()
 
   expect_equal(readLines(fs::path(to, "a.txt")), "new")
 })
@@ -205,88 +201,10 @@ test_that("dir_sync_down() overwrites changed files", {
 
 
 
+# demos -----
 
-
-
-
-
-
-
-
-
-
-make_demo_sync_dirs <- function(root = tempfile("demo-sync-")) {
-  from <- fs::path(root, "from")
-  to <- fs::path(root, "to")
-
-  fs::dir_create(from)
-  fs::dir_create(to)
-
-  fs::dir_create(fs::path(from, "subdir"))
-  fs::dir_create(fs::path(to, "subdir"))
-
-  # Same in both: overwrite
-  writeLines("same file", fs::path(from, "same.txt"))
-  writeLines("same file", fs::path(to, "same.txt"))
-
-  # Same in both: no actoin
-  writeLines("same file", fs::path(from, "copied.txt"))
-  fs::file_copy(fs::path(from, "copied.txt"), fs::path(to, "copied.txt"))
-
-  # Missing from destination: should copy
-  writeLines("copy me", fs::path(from, "copy-me.txt"))
-
-  # Changed in destination: should overwrite
-  writeLines("new contents", fs::path(from, "changed.txt"))
-  writeLines("old contents", fs::path(to, "changed.txt"))
-
-  # Extra in destination: should skip/delete depending on .delete
-  writeLines("extra file", fs::path(to, "extra.txt"))
-
-  # Recursive copy
-  writeLines("nested copy me", fs::path(from, "subdir", "nested-copy.txt"))
-
-  # Recursive overwrite
-  writeLines("nested new contents", fs::path(from, "subdir", "nested-changed.txt"))
-  writeLines("nested old contents", fs::path(to, "subdir", "nested-changed.txt"))
-
-  # Recursive extra
-  writeLines("nested extra file", fs::path(to, "subdir", "nested-extra.txt"))
-
-  # Same contents, but newer mtime in source.
-  # Under metadata comparison this should overwrite.
-  # Under hash comparison this should be unchanged.
-  writeLines("unchanged contents", fs::path(to, "newer-but-unchanged.txt"))
-  Sys.sleep(1.1)
-  writeLines("unchanged contents", fs::path(from, "newer-but-unchanged.txt"))
-
-  # Also test same contents/newer source inside a subdirectory
-  writeLines("nested unchanged contents", fs::path(to, "subdir", "nested-newer-but-unchanged.txt"))
-  Sys.sleep(1.1)
-  writeLines("nested unchanged contents", fs::path(from, "subdir", "nested-newer-but-unchanged.txt"))
-
-  list(
-    root = root,
-    from = from,
-    to = to,
-    files_from = fs::dir_ls(from, recurse = TRUE, type = "file"),
-    files_to = fs::dir_ls(to, recurse = TRUE, type = "file")
-  )
-}
-
-
-
-test_that("dir_sync_down demo", {
-  testthat::skip(message = "demo")
-  l <- make_demo_sync_dirs()
-
-  dir_sync_down(l$from, l$to)
-
-
-  dir_sync_down(l$from, l$to, .delete = TRUE)
-
-
-
+test_that("file_rename demo", {
+  testthat::skip(message = "additional file_rename_impl() demo")
   dir <- tempfile()
   dir.create(dir)
   path <-     c("a1", "b1", "c1", "cc1", "d", "f", "g")
@@ -295,5 +213,27 @@ test_that("dir_sync_down demo", {
 
   file_rename_impl(path, path_new, .overwrite = FALSE, .dry_run = TRUE)
 
+})
+
+
+test_that("dir_sync_down demo", {
+  testthat::skip(message = "additional dir_sync_down() demo")
+
+  l <- setup_demo_dir_sync_down()
+  path <- l$from
+  path_new <- l$to
+  .compare <- "md5"
+  .delete <- FALSE
+  .dry_run <- TRUE
+  dir_sync_down(l$from, l$to)
+  dir_sync_down(l$from, l$to, .delete = TRUE)
+
+  dir <- tempfile()
+  dir.create(dir)
+  path <-     c("a1", "b1", "c1", "cc1", "d", "f", "g")
+  path_new <- c("a2", "b2", "c2",  "c2", "e", "g", "h")
+  dir |> file.path(path) |> file.create()
+
+  file_rename_impl(path, path_new, .overwrite = FALSE, .dry_run = TRUE)
 })
 

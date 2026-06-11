@@ -93,11 +93,52 @@ file_rename_impl <- function(path, path_new, .dry_run, .overwrite) {
       rename_plan[to_move, "path"],
       rename_plan[to_move, "path_new"]
     )
-  } else {
-    cli::cli_inform("No files were renamed.")
   }
 
   invisible(rename_plan)
+}
+
+
+prepare_file_rename_plan <- function(path, path_new, .overwrite) {
+  is_duplicated <- function(x) duplicated(x) | duplicated(x, fromLast = TRUE)
+
+  is_changed <- path != path_new
+  is_overwrite <- is_changed & fs::file_exists(path_new)
+  is_unchanged <- !is_changed & !is_duplicated(path_new)
+
+  # A chain occurs when a new name is one of the paths set to change
+  is_chained <- is_changed & path_new %in% path[is_changed]
+
+  # A collision occurs when multiple source files rename to the same target
+  is_changed_with_collision <- is_duplicated(path_new[is_changed])
+  has_name_collision <- rep(FALSE, length(is_changed))
+  has_name_collision[is_changed] <- is_changed_with_collision
+
+  action <- rep("none", length(is_changed))
+  action[is_changed] <- "rename"
+  action[is_overwrite & !.overwrite] <- "skip"
+  action[is_overwrite & .overwrite] <- "overwrite"
+  action[is_chained] <- "fail"
+  action[has_name_collision] <- "fail"
+
+  reason <- rep("unchanged", length(is_changed))
+  reason[is_changed] <- "renamed"
+  reason[is_overwrite & !.overwrite] <- "overwrite disabled"
+  reason[is_overwrite & .overwrite] <- "overwrite"
+  reason[is_chained] <- "chained rename"
+  reason[has_name_collision] <- "name collision"
+
+  data.frame(
+    path = path,
+    path_new = path_new,
+    action = action,
+    reason = reason,
+    is_changed = is_changed,
+    has_name_collision = has_name_collision,
+    is_overwrite = is_overwrite,
+    is_unchanged = is_unchanged,
+    is_chained = is_chained
+  )
 }
 
 
@@ -153,56 +194,12 @@ prepare_file_rename_message <- function(rename_plan, .dry_run, .overwrite) {
 }
 
 
-prepare_file_rename_plan <- function(path, path_new, .overwrite) {
-  is_duplicated <- function(x) duplicated(x) | duplicated(x, fromLast = TRUE)
-
-  is_changed <- path != path_new
-  is_overwrite <- is_changed & fs::file_exists(path_new)
-  is_unchanged <- !is_changed & !is_duplicated(path_new)
-
-  # A chain occurs when a new name is one of the paths set to change
-  is_chained <- is_changed & path_new %in% path[is_changed]
-
-  # A collision occurs when multiple source files rename to the same target
-  is_changed_with_collision <- is_duplicated(path_new[is_changed])
-  has_name_collision <- rep(FALSE, length(is_changed))
-  has_name_collision[is_changed] <- is_changed_with_collision
-
-  action <- rep("none", length(is_changed))
-  action[is_changed] <- "rename"
-  action[is_overwrite & !.overwrite] <- "skip"
-  action[is_overwrite & .overwrite] <- "overwrite"
-  action[is_chained] <- "fail"
-  action[has_name_collision] <- "fail"
-
-  reason <- rep("unchanged", length(is_changed))
-  reason[is_changed] <- "renamed"
-  reason[is_overwrite & !.overwrite] <- "overwrite disabled"
-  reason[is_overwrite & .overwrite] <- "overwrite"
-  reason[is_chained] <- "chained rename"
-  reason[has_name_collision] <- "name collision"
-
-  data.frame(
-    path = path,
-    path_new = path_new,
-    action = action,
-    reason = reason,
-    is_changed = is_changed,
-    has_name_collision = has_name_collision,
-    is_overwrite = is_overwrite,
-    is_unchanged = is_unchanged,
-    is_chained = is_chained
-  )
-}
-
-
-# Prepare bullet points for dry-run output
 prepare_rename_plan_bullets <- function(rename_plan) {
   changed <- rename_plan$is_changed
   if (!any(changed)) {
     return(c(
       "Rename plan:",
-      " " = "No files would be renamed."
+      " " = "No files need to be renamed."
     ))
   }
 
@@ -246,6 +243,7 @@ prepare_rename_plan_bullets <- function(rename_plan) {
   c("Rename plan:", changes)
 }
 
+# ChatGPT assisted on the chain detection
 find_rename_chains <- function(rename_plan) {
   changed <- rename_plan[rename_plan$is_changed, , drop = FALSE]
   from <- as.character(changed$path)
@@ -294,6 +292,7 @@ find_rename_chains <- function(rename_plan) {
   chains
 }
 
+# ChatGPT assisted on the chain detection
 format_rename_chains <- function(rename_plan) {
   chains <- find_rename_chains(rename_plan)
 
@@ -315,7 +314,77 @@ format_rename_chains <- function(rename_plan) {
 
 
 
-
+#' Sync one directory down into another
+#'
+#' `dir_sync_down()` syncs the files in one directory into another directory.
+#' Files that are present in `path` but missing from `path_new` are copied.
+#' Files that are present in both directories but differ are overwritten.
+#' Files that are present in `path_new` but absent from `path` are ignored
+#' unless `.delete = TRUE`.
+#'
+#' By default, this function performs a dry run: it prints a summary of the
+#' sync plan and returns the plan invisibly without changing any files. Set
+#' `.dry_run = FALSE` to copy, overwrite, or delete files.
+#'
+#' @param path Source directory.
+#' @param path_new Destination directory.
+#' @param .dry_run Whether to preview the sync plan without changing files.
+#'   Defaults to `TRUE`.
+#' @param .delete Whether to delete files in `path_new` that are absent from
+#'   `path`. Defaults to `FALSE`, so extra destination files are ignored unless
+#'   deletion is explicitly enabled.
+#' @param .compare Method used to determine whether files differ. `"metadata"`
+#'   compares file size and modification time. `"md5"` compares file contents
+#'   using [tools::md5sum()]. `"xxhash"` compares file contents using
+#'   `xxhashlite::xxhash_file()`, if the `xxhashlite` package is installed.
+#'
+#' @return A data frame describing the directory sync plan, invisibly. The plan
+#'   includes the relative file path, the planned `action`, the `reason` for the
+#'   action, source and destination file metadata, and the source and destination
+#'   paths used for copying.
+#'
+#' @details The possible values of `action` are:
+#'   * `"copy"`: copy a file from `path` because it is missing from `path_new`;
+#'   * `"overwrite"`: overwrite a destination file because the source and
+#'     destination files differ;
+#'   * `"delete"`: delete an extra destination file, when `.delete = TRUE`;
+#'   * `"ignore"`: leave an extra destination file unchanged, when
+#'     `.delete = FALSE`;
+#'   * `"none"`: leave a file unchanged.
+#'
+#'   With `.compare = "metadata"`, files are treated as different when their
+#'   size or modification time differs. With `.compare = "md5"` or
+#'   `.compare = "xxhash"`, files that exist on both sides are compared by
+#'   content hash instead. Under hash comparison, files with the same contents
+#'   are treated as unchanged even if their modification times differ.
+#'
+#' @examples
+#' dir_from <- tempfile()
+#' dir_to <- tempfile()
+#'
+#' fs::dir_create(dir_from)
+#' fs::dir_create(dir_to)
+#'
+#' writeLines("same", fs::path(dir_from, "same.txt"))
+#' writeLines("same", fs::path(dir_to, "same.txt"))
+#'
+#' writeLines("copy me", fs::path(dir_from, "new.txt"))
+#'
+#' writeLines("new contents", fs::path(dir_from, "changed.txt"))
+#' writeLines("old contents", fs::path(dir_to, "changed.txt"))
+#'
+#' writeLines("extra", fs::path(dir_to, "extra.txt"))
+#'
+#' # Preview the sync plan without changing files
+#' plan <- dir_sync_down(dir_from, dir_to)
+#'
+#' # Actually copy and overwrite files, but keep extra destination files
+#' dir_sync_down(dir_from, dir_to, .dry_run = FALSE)
+#'
+#' # Also delete extra destination files
+#' dir_sync_down(dir_from, dir_to, .dry_run = FALSE, .delete = TRUE)
+#'
+#' @export
 dir_sync_down <- function(
     path,
     path_new,
@@ -323,18 +392,14 @@ dir_sync_down <- function(
     .delete = FALSE,
     .compare = c("metadata", "md5", "xxhash")
 ) {
-  # l <- make_demo_sync_dirs()
-  # path <- l$from
-  # path_new <- l$to
-
   .compare <- rlang::arg_match(.compare)
   path <- fs::path_abs(path)
   path_new <- fs::path_abs(path_new)
-  if (!.dry_run) fs::dir_create(path_new)
 
   if (!fs::dir_exists(path)) {
     cli::cli_abort("{.arg path} must be an existing directory.")
   }
+  if (!.dry_run) fs::dir_create(path_new)
 
   sync_plan <- prepare_dir_sync_plan(
     path = path,
@@ -348,7 +413,6 @@ dir_sync_down <- function(
   sync_extra <- sync_plan |>
     dplyr::filter(.data$action %in% c("ignore", "delete"))
 
-
   if (nrow(sync_newer) == 0 && nrow(sync_extra) == 0) {
     cli::cli_inform(
       c("v" = "Skipping {.file {path_new}}")
@@ -360,9 +424,9 @@ dir_sync_down <- function(
     action_x <- if (.delete) "delete" else "ignore"
 
     main_action <- if (.dry_run) {
-      "Dry run: 🔃 Would update {.file {path_new}}"
+      "Dry run: \U0001F503 Would update {.file {path_new}}"
     } else {
-      "🔃 Updating {.file {path_new}}"
+      "\U0001F503 Updating {.file {path_new}}"
     }
     cli::cli_inform(
       c(
@@ -424,6 +488,9 @@ prepare_dir_sync_plan <- function(
   plan$action[from_missing] <- if (.delete) "delete" else "ignore"
   plan$reason[from_missing] <- if (.delete) "extra file" else "delete disabled"
 
+  # `path_from`, `path_to` are existing files.
+  # `copy_*` columns are intended for the `file_copy()` command. they include new
+  # files missing in `path_to`
   plan <- compare_file_hashes_in_sync_plan(plan, .compare = .compare)
   plan$copy_from <- fs::path(path, plan$path_rel)
   plan$copy_to <- fs::path(path_new, plan$path_rel)
@@ -470,7 +537,10 @@ collect_dir_file_info <- function(path, side = c("from", "to")) {
 }
 
 
-compare_file_hashes_in_sync_plan <- function(plan, .compare = c("metadata", "md5", "xxhash")) {
+compare_file_hashes_in_sync_plan <- function(
+    plan,
+    .compare = c("metadata", "md5", "xxhash")
+) {
   .compare <- rlang::arg_match(.compare)
   if (.compare == "metadata") return(plan)
 
