@@ -145,17 +145,17 @@ are treated as unchanged even if their modification times differ.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Preview the sync plan without changing files</span></span></span>
 <span class="r-in"><span><span class="va">plan</span> <span class="op">&lt;-</span> <span class="fu">dir_sync_down</span><span class="op">(</span><span class="va">dir_from</span>, <span class="va">dir_to</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Dry run: 🔃 Would update <span style="color: #0000BB;">/tmp/RtmpteTTx3/file967232fdae9</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Dry run: 🔃 Would update <span style="color: #0000BB;">/tmp/RtmpZbc9e8/filea3ca71fcdd15</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   1 new file (copy), 2 out-of-sync files (overwrite), 1 extra file (ignore)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Actually copy and overwrite files, but keep extra destination files</span></span></span>
 <span class="r-in"><span><span class="fu">dir_sync_down</span><span class="op">(</span><span class="va">dir_from</span>, <span class="va">dir_to</span>, .dry_run <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 🔃 Updating <span style="color: #0000BB;">/tmp/RtmpteTTx3/file967232fdae9</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 🔃 Updating <span style="color: #0000BB;">/tmp/RtmpZbc9e8/filea3ca71fcdd15</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   1 new file (copy), 2 out-of-sync files (overwrite), 1 extra file (ignore)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Also delete extra destination files</span></span></span>
 <span class="r-in"><span><span class="fu">dir_sync_down</span><span class="op">(</span><span class="va">dir_from</span>, <span class="va">dir_to</span>, .dry_run <span class="op">=</span> <span class="cn">FALSE</span>, .delete <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 🔃 Updating <span style="color: #0000BB;">/tmp/RtmpteTTx3/file967232fdae9</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 🔃 Updating <span style="color: #0000BB;">/tmp/RtmpZbc9e8/filea3ca71fcdd15</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   0 new files (copy), 3 out-of-sync files (overwrite), 1 extra file (delete)</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

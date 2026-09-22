@@ -14,6 +14,11 @@ print_duckdb(object, table_limit = 50)
 
   a database connection to a duckdb database
 
+- table_limit:
+
+  number of table names to print before truncating with `...`. Defaults
+  to 50.
+
 ## Value
 
 `NULL` invisibly

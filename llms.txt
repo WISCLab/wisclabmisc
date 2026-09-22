@@ -185,3 +185,8 @@ Mirrors of the Supplemental Materials documents for our publications
   typical children III: Interaction between speaking rate and
   intelligibility'](https://wisclab.github.io/wisclabmisc/articles/sm-2025-mahr-intel-rate.md)
   :
+- [Analysis code: 'Does the Use of Crowdsourced Listeners Yield
+  Different Speech Intelligibility Results Than In-Person Listeners for
+  Typically Developing
+  Children?'](https://wisclab.github.io/wisclabmisc/articles/sm-2026-salvo-prolific.md)
+  :

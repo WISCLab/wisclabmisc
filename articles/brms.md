@@ -403,7 +403,7 @@ Let’s fit the models and compare them.
 library(rstan)
 #> Loading required package: StanHeaders
 #> 
-#> rstan version 2.32.7 (Stan version 2.32.2)
+#> rstan version 2.32.7 (Stan version 2.39.0)
 #> For execution on a local, multicore CPU with excess RAM we recommend calling
 #> options(mc.cores = parallel::detectCores()).
 #> To avoid recompilation of unchanged Stan programs, we recommend calling
@@ -419,12 +419,12 @@ loo_compare(m1, m2, m3) |>
   print(simplify = FALSE)
 #>  model elpd_diff se_diff p_worse       diag_diff diag_elpd elpd_loo se_elpd_loo
 #>     m1       0.0     0.0      NA                              248.6        14.8
-#>     m2      -0.6     2.1    0.62 |elpd_diff| < 4              248.0        14.7
-#>     m3      -4.1     2.5    0.95                              244.5        14.9
+#>     m2      -0.6     2.0    0.61 |elpd_diff| < 4              248.0        14.7
+#>     m3      -3.8     2.5    0.94 |elpd_diff| < 4              244.8        14.9
 #>  p_loo se_p_loo  looic se_looic
-#>    3.2      0.4 -497.3     29.7
-#>    4.8      0.6 -496.1     29.4
-#>    6.5      0.7 -489.0     29.8
+#>    3.2      0.4 -497.2     29.6
+#>    4.8      0.6 -496.0     29.4
+#>    6.2      0.7 -489.6     29.7
 #> 
 #> Diagnostic flags present.
 #> See ?`loo-glossary` (sections `diag_diff` and `diag_elpd`)
