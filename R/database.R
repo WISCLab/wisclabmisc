@@ -3,6 +3,8 @@
 #' Custom function for printing duckdb database connections
 #'
 #' @param object a database connection to a duckdb database
+#' @param table_limit number of table names to print before truncating with
+#' `...`. Defaults to 50.
 #' @return `NULL` invisibly
 #' @concept database
 #' @details Use the following to overwrite the S4 method for printing duckdb

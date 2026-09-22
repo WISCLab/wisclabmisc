@@ -1,0 +1,26 @@
+---
+title: >
+  Analysis code: 'Does the Use of Crowdsourced Listeners Yield Different Speech 
+  Intelligibility Results Than In-Person Listeners for Typically Developing 
+  Children?'
+author: Tristan Mahr
+date: 2026-09-17
+---
+
+The following is a reproduction of the Supplemental Material (analysis
+code) for Salvo, Mahr, Sandgren, Mabie, & Hustad (2026). All code is in
+the R programming language.
+
+  - Publication DOI:
+    [10.1044/2025\_JSLHR-25-00391](https://doi.org/10.1044/2025_JSLHR-25-00391)
+  - Supplemental Material DOI:
+    [10.23641/asha.31101451](https://doi.org/10.23641/asha.31101451)
+  - Analysis notes: Bayesian mixed effects regression; generalized
+    additive models; marginal means; brms
+  - Project repo (private): `2024-10-hs-prolific`
+
+***
+
+```{r, child="sm-2026-salvo-prolific.md"}
+```
+

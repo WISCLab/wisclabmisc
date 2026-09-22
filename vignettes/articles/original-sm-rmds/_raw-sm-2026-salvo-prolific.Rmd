@@ -1,0 +1,652 @@
+---
+title: "Supplemental Materials"
+author: Tristan Mahr
+output: 
+  solarizeddocx::document: default
+date: "2025-04-28"
+bibliography: notebook/refs.bib
+csl: notebook/apa.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  collapse = TRUE, 
+  comment = "#>", 
+  fig.height = 3
+)
+
+library(tidyverse)
+options(width = 72)
+
+source("R/functions.R", keep.source = TRUE)
+print_function <- function(f) {
+  l <- capture.output(print(f, useSource = TRUE))
+  l[1] <- paste0(as.character(substitute(f))," <- ", l[1])
+  c(l, "")
+}
+
+targets::tar_load(model_stocs_difference_smooth)
+v <- list()
+v$r <- getRversion()
+v$cmdstanr <- utils::packageVersion("cmdstanr")
+v$brms <- utils::packageVersion("brms")
+v$psych <- utils::packageVersion("psych")
+v$mgcv <- utils::packageVersion("mgcv")
+v$tidybayes <- utils::packageVersion("tidybayes")
+v$ggdist <- utils::packageVersion("ggdist")
+v$stan <- model_stocs_difference_smooth$version$cmdstan
+```
+
+In this document, we provide and describe the R code used to produce the
+main statistical findings of the manuscript.
+
+## Data
+
+Listeners transcribed children's speech, and we measured the children's
+intelligibilities. Two different sets or sources of listeners were
+compared (in-person versus crowdsourced). Crowdsourced listeners were
+presented with an additional set of *fidelity* trials with an adult
+speaker so that we could compute *fidelity intelligibility* scores.
+These adult speakers should be easy for a reliable listener to
+transcribe, so they provide a basis for screening out unreliable
+listeners. We consider three different data screening scenarios based on
+whether we apply a fidelity criterion of 0 (i.e., no criterion), .8 or
+.9. We modeled intelligibility for single-word trials and multiword
+trials separately.
+
+Sample values from each column of the dataset are given below:
+
+```{r}
+library(tidyverse)
+data <- targets::tar_read("data_anon")
+glimpse(data)
+```
+
+Columns represent the following values:
+
+  - `scenario` - Data-screening scenario: `"screened_at_00"` (no data
+    screening), `"screened_at_80"` (at least 80% intelligibility on
+    fidelity trials), and `"screened_at_90"` (at least 90%
+    intelligibility on fidelity trials)
+
+  - `set`/`o_set` - Listener type: `"in_person"` or `"prolific"`
+    (crowdsourced). The `o_set` version is an ordered factor used for
+    modeling.
+
+  - `listener` - Random ID for the listener who is transcribing the speech
+    samples.
+  
+  - `listener_order` - Ordering of the listeners (from earliest to
+    latest) within listener type and within each child. This ordering
+    matters because in each data-screening `scenario`, we select the 
+    first 5 listeners that meet a data-screening criterion.
+
+  - `child` - Random ID for the speaker whose speech samples are being
+    played and transcribed.
+
+  - `speaker_type` - Speaker type on intelligibility trials:
+    `"participant"` for the main intelligibility trials (where the
+    speaker is the `child`) or `"adult"` for the fidelity trials used
+    for data-screening.
+
+  - `tocs_type` - Intelligibility or speech sample type: `"multiword"`
+    for connected speech samples, `"single-word"` for single words, and
+    `"overall"` for an average across all trials.
+
+  - `intelligibility`, `intelligibility2`: Average of trial-level
+    intelligibilities. For each trial, we compute the intelligibility as
+    the proportion of words correctly transcribed on that trials. These
+    proportions are then averaged together to produce intelligibility
+    scores. `intelligibility2` is `intelligibility` squished into the
+    range 0.005--0.995 (for use with beta regression).
+
+  - `sum_m_word`, `sum_s_word`: Total number of words correctly
+    transcribed (`sum_m_word`, *matching* words) and total number of
+    words in the speech samples (`sum_s_word`, *sample* words). These
+    aggregations provide a way to compute a different intelligibility
+    measure (proportion of words correctly transcribed), and they are
+    used in a logistic regression model for the single-word trials.
+
+  - `age_months`, `age_48`: Age of the `child` in months (`age_months`),
+    and a centered age where 48 months has the value 0 (`age_48`). The
+    `"adult"` `speaker_type` trials don't have an age associated with
+    them.
+
+Each child has 2 in-person listeners and 5 crowdsourced listeners in
+each data-screening scenario. We can verify these listener counts.
+
+```{r}
+data |> 
+  distinct(child, listener, set, scenario) |> 
+  count(child, set, scenario, name = "num_listeners") |> 
+  count(set, scenario, num_listeners, name = "num_children")
+```
+
+We can verify the fidelity intelligibility data screening thresholds in
+each group.
+
+```{r}
+data |> 
+  filter(
+    speaker_type == "adult", 
+    # average of single-word and connected speech trials
+    tocs_type == "overall"
+  ) |> 
+  group_by(scenario, set) |> 
+  summarise(
+    min_intell = min(intelligibility),
+    n_under_80 = sum(intelligibility < .80),
+    n_under_90 = sum(intelligibility < .90),
+    .groups = "drop"
+  )
+```
+
+
+(These counts slightly differ from a table in the manuscript because
+that table includes an additional 3 exclusions where an excluded
+listener's first replacement also had to be excluded but here we
+just count the first 5 listeners that satisfy inclusions.)
+
+### Intraclass correlation
+
+We report the intraclass correlation statistic as a measure of
+interrater reliability. We deferred ICC calculation to the psych package
+[vers. `r v$psych`, @r-psych]. `pysch::ICC()` requires the data to have one
+column per "judge" and no grouping variables, so we use `unstack()` (a
+no-frills `pivot_wider()`) in each `set` × `scenario` × `tocs_type`
+subgroup, compute the ICCs and extract the relevant values. 
+
+```{r}
+data |> 
+  filter(speaker_type == "participant", tocs_type != "overall") |>
+  # Number the listeners within each child and each subsample
+  group_by(set, scenario, tocs_type, child) |> 
+  mutate(
+    listener_number = seq_along(listener)
+  ) |> 
+  ungroup() |> 
+  # Compute ICCs in each subsample
+  group_by(set, scenario, tocs_type) |> 
+  reframe(
+    datasets = pick(c(listener_number, intelligibility)) |> 
+      unstack(intelligibility ~ listener_number) |> 
+      list(),
+    iccs = datasets |> 
+      lapply(psych::ICC, lmer = FALSE) |> 
+      lapply(getElement, "results")
+  ) |> 
+  unnest(iccs) |> 
+  filter(type %in% c("ICC2", "ICC2k")) |> 
+  select(-F, -p, -df1, -df2, -datasets) |>
+  mutate(
+    set = set |> printy::str_replace_same_as_previous(""),
+    scenario = scenario |> printy::str_replace_same_as_previous(""),
+    tocs_type = tocs_type |> printy::str_replace_same_as_previous(""),
+  ) |> 
+  rename(ll = `lower bound`, ul = `upper bound`) |> 
+  print(n = Inf)
+```
+
+
+## Bayesian generalized additive mixed models
+
+We fit a pair of Bayesian regression models with brms: one for connected speech
+intelligibility and one for single-word intelligibility. We regressed 
+intelligibility onto age and listener type with by-child random effects of 
+listener type. We only examined `"participant"` intelligibility scores (the 
+fidelity trials were only used for data-screening). These models had repeated 
+measures with 1 intelligibility score per listener and 2 or 5 
+listeners per child.
+
+The same basic regression setup was used to fit each model, so we describe the 
+first model in more detail.
+
+### Connected speech model
+
+We used beta regression for the connected speech model. brms uses the
+mean-precision ($\mu, \phi$) parameterization of the beta distribution
+where the mean is a proportion and the precision is a positive number.
+We used the default link functions: logit for the mean (so the model for
+the mean works on the log-odds scale) and log for the precision.
+
+
+
+
+```{r}
+targets::tar_load("model_stocs_difference_smooth")
+model_stocs_difference_smooth |> 
+  family() |> 
+  _[c("family", "dpars", "link", "link_phi")] |> 
+  str()
+```
+
+Beta regression does not allow proportions of 0 or 1, so these 
+floor and ceiling values were squished into the range 0.005 and .995.
+
+```{r}
+y <- model_stocs_difference_smooth$data$intelligibility2
+range(y)
+sum(y == .005)
+sum(y == .995)
+```
+
+The regression model in brms syntax is given below:
+
+```{r}
+formula(model_stocs_difference_smooth)
+```
+
+For the mean model, we have a parametric effect of listener type (`set`)
+and by-child random effects of listener type (`(set | child)`). We also
+have a thin-plate spline smooth of age (`s(age_48)`) and a *difference
+smooth* of age for the two listener types. Supplying an ordered factor
+(`o_set`) causes mgcv/brms to compute a difference smooth.
+
+Below we plot the baseline smooth (in-person listeners) and the
+difference smooth (in-person minus crowdsourced listeners). There is not
+a clear difference in the effects of age on intelligibility in the
+smooths between the two listener groups (on the logit scale):
+
+```{r}
+library(ggplot2)
+library(patchwork)
+
+cs1 <- model_stocs_difference_smooth |> 
+  brms::conditional_smooths("s(age_48)") |> 
+  # i.e., return the plot object but don't display it
+  plot(plot = FALSE)
+
+cs2 <- model_stocs_difference_smooth |> 
+  brms::conditional_smooths(
+    "s(age_48, by = o_set)", 
+    int_conditions = list(o_set = "prolific")
+  ) |> 
+  plot(plot = FALSE)
+
+cs1[[1]] + ylim(-2.75, 2.75) + cs2[[1]] + ylim(-2.75, 2.75)
+```
+
+#### Marginal means
+
+Our visualizations used marginal means from each model. That is, a mixed
+effects model's fixed effects estimates a conditional mean: It
+is the expected intelligibility score for a participant whose random
+effect values have all been set to 0. This conditional mean is not the
+same as the *marginal* or population mean, so we have take additional
+steps to compute this marginal mean. Namely, we simulate new children
+based on the model (sample new random effect values) and then average
+(or *marginalize*) over them.
+
+We used the following recipe to compute marginal means. 
+
+```{r, include = FALSE}
+l1 <- print_function(compute_tocs_marginal_means)
+```
+```{r}
+# 0. Prepare a prediction grid for a new out-of-sample participant
+newdata <- targets::tar_read(newdata_stocs)
+
+```
+```{r, code = l1}
+```
+
+
+Because of the long computation time, we instead read in and preview a 
+precomputed copy of the marginal means. 
+
+```{r}
+data_stocs_marginal_means <- targets::tar_read(data_stocs_marginal_means)
+data_stocs_marginal_means
+```
+
+From these conditional means, it is straightforward to compute growth 
+curves presented in the manuscript:
+
+```{r}
+ggplot(data_stocs_marginal_means) + 
+  aes(x = age_48, y = .marginal) +
+  ggdist::stat_lineribbon(
+    aes(group = set, fill = set), 
+    .width = .95,
+    alpha = .5
+  )
+```
+
+
+
+#### Effect of intelligibility on listener type difference
+
+For the plot of the in-person listener advantage versus in-person
+intelligibility, we fix the in-person intelligibility to a narrow range
+of values (i.e., we bin them) and gather all of the intelligibility
+difference scores for that range of values.
+
+For example, here are all the rows in the marginal means dataframe where the 
+in-person marginal means that are binned to .65. 
+
+```{r}
+d <- data_stocs_marginal_means |> 
+  select(-.conditional) |> 
+  filter(set != "prolific") |> 
+  tidyr::pivot_wider(names_from = set, values_from = .marginal) |> 
+  ungroup()
+
+d_at_65 <- d |> 
+  mutate(
+    in_person = plyr::round_any(in_person, .025)
+  ) |> 
+  filter(in_person == .65)
+
+d_at_65
+```
+
+There are `r nrow(d_at_65)` ages × posterior draws where the marginal mean
+is binned to this value. These include predictions from different ages and
+different amounts of listener type differences (`diff`). We can look at the
+distribution of these listener type differences.
+
+```{r}
+hist(d_at_65$diff)
+```
+
+This distribution, for each difference, are presented in the manuscript. We
+used the general recipe given below. The main details are that the differences
+1) we exclude any bins with fewer than 200 posterior draws and 2) within each
+bin the differences within a posterior draw are averaged together. 
+
+```{r}
+# Bin the in-person scores and count the differences in each bin. Discard 
+# any bin with fewer than 200 posterior total draws.
+d_intervals <- d |> 
+  mutate(
+    in_person = plyr::round_any(in_person, .025)
+  ) |> 
+  group_by(outcome, level, in_person) |> 
+  mutate(n_draws = n()) |> 
+  ungroup() |> 
+  filter(n_draws > 200) |> 
+  # If a posterior draw hits an in-person intelligibility bin multiple
+  # times, because a curve plateaus or horseshoes, take the average
+  # of the differences for each draw. Now each posterior draw
+  # can only have one vote.
+  group_by(outcome, level, in_person, .draw) |> 
+  summarise(
+    diff = mean(diff),
+    .group = "drop"
+  ) |> 
+  # For each in-person intelligibility bin, get median and 95% interval.
+  group_by(outcome, level, in_person) |> 
+  ggdist::median_qi(diff)
+
+d_intervals
+
+ggplot(d_intervals) + 
+  aes(x = in_person) + 
+  geom_ribbon(aes(ymin = .lower, ymax = .upper), alpha = .2) +
+  geom_line(aes(y = diff))
+```
+
+
+
+## Single-word intelligibility
+
+The single-word intelligibility model was completely analogous to the multiword 
+model except that it was used logistic regression model (a binomial family 
+with logit link).
+
+```{r}
+targets::tar_load("model_wtocs_difference_smooth")
+model_wtocs_difference_smooth |> 
+  family() |> 
+  _[c("family", "dpars", "link")] |> 
+  str()
+```
+
+The binomial family estimates a number of successes in a number of trials. The
+brms `trials()` syntax capture those values in the lefthand side of the
+regression formula:
+
+```{r}
+formula(model_wtocs_difference_smooth)
+```
+
+Recall that `sum_m_word` is the total number of words correctly
+transcribed by a listener and `sum_s_word` is the total number of words
+presented to the listener.
+
+This model also used a difference smooth, and we can visualize the two smooths
+as we did above.
+
+```{r}
+cs1 <- model_wtocs_difference_smooth |> 
+  brms::conditional_smooths("s(age_48)") |> 
+  # i.e., return the plot object but don't display it
+  plot(plot = FALSE)
+
+cs2 <- model_wtocs_difference_smooth |> 
+  brms::conditional_smooths(
+    "s(age_48, by = o_set)", 
+    int_conditions = list(o_set = "prolific")
+  ) |> 
+  plot(plot = FALSE)
+
+cs1[[1]] + ylim(-2.75, 2.75) + cs2[[1]] + ylim(-2.75, 2.75)
+```
+
+The marginal means computation and differences-by-in-person-intelligibility 
+computation used the same recipes (and code) as outlined above.
+
+
+## Model comparisons
+
+Do we need the difference smooth in each of these models? The right
+panel of the marginal smooths mostly shows a horizontal line hovering
+around 0, suggesting a limited difference. Model comparison with
+approximate leave-one-out (LOO) techniques [@loo], on the other hand, does not
+strongly favor the simpler shared smooth model over the model with a 
+baseline smooth and difference smooth. 
+
+```{r}
+targets::tar_load(model_stocs_difference_smooth)
+targets::tar_load(model_stocs_shared_smooth)
+targets::tar_load(model_wtocs_difference_smooth)
+targets::tar_load(model_wtocs_shared_smooth)
+
+brms::loo_compare(
+  model_wtocs_shared_smooth, 
+  model_wtocs_difference_smooth
+) |> 
+  print(simplify = FALSE) 
+
+brms::loo_compare(
+  model_stocs_shared_smooth, 
+  model_stocs_difference_smooth
+) |> 
+  print(simplify = FALSE) 
+```
+
+We interpret this output by looking at `elpd_loo` (expected log
+predictive density). Higher values indicate better expected predictive
+performance on out of sample data. The difference in ELPD between each
+model and the highest ELPD model (i.e., first row) is given in
+`elpd_diff`. We need to interpret these differences in light of the
+standard error `se_diff`. Neither of the differences reported above is
+greater than 2-SEs in magnitude, so there is not a statistically clear
+difference between the models in terms of predictive performance.
+
+We also note that leave-one-out comparison is not ideal for
+repeated-measures data but leave-one-group-out techniques are
+computationally prohibitive.
+
+
+## Sampling details
+
+Hamilitonian Monte Carlo sampling diagnostics indicated no major issues. There
+were no divergent transitions, the max treedepth on the iterations did not reach
+the treedepth limit, and the so-called estimated fraction of missing information
+statistic was greater than .3 on every chain.
+
+```{r}
+get_hmc_details <- function(model, ...) {
+  df <- brms::nuts_params(model, ...)
+  df$model <- as.character(substitute(model))
+  df$limit_treedepth <- model$stan_args$control$max_treedepth %||% 10
+  tidyr::pivot_wider(
+    data = df,
+    names_from = "Parameter", 
+    values_from = "Value"
+  )
+}
+
+bind_rows(
+  get_hmc_details(model_stocs_difference_smooth),
+  get_hmc_details(model_wtocs_difference_smooth)
+) |> 
+  group_by(model, chain = Chain) |> 
+  summarise(
+    n_draws = n(),
+    efmi = mean(diff(energy__) ^ 2) / var(energy__),
+    n_divergent = sum(divergent__),
+    max_depth = max(treedepth__),
+    limit_depth = unique(limit_treedepth),
+    .groups = "drop"
+  )
+```
+
+The Rhat and effective sample size statistics were also satisfactory
+(Rhats \<= 1.01, ESS \> 100 per chain, or 400):
+
+```{r}
+get_convergence_stats <- function(model) {
+  df <- posterior::summarise_draws(
+    model, 
+    posterior::default_convergence_measures()
+  )
+  df$model <- as.character(substitute(model))
+  df
+}
+
+bind_rows(
+  get_convergence_stats(model_stocs_difference_smooth),
+  get_convergence_stats(model_wtocs_difference_smooth)
+) |> 
+  group_by(model) |> 
+  summarise(
+    model = "model_stocs_difference_smooth",
+    max_rhat = max(rhat), 
+    min_ess_bulk = min(ess_bulk),
+    min_ess_tail = min(ess_tail)
+  )
+```
+
+
+
+## Prior description
+
+Because these models estimate means on the logit scale, we used weakly
+informative priors of Normal(0, 1) for the regression coefficients and standard
+deviations of the random effects. Because mgcv transforms a spline
+basis to absorb constraints and penalty terms in sophisticated ways, appropriate
+scale values for the smooth terms are not clear a priori. Therefore, we used
+wider Normal(0, 2) priors for the SDs of the smoothing coefficients.
+
+We used a weakly informative LKJ(2) prior on the correlations in the random-effect 
+matrix. This prior pulls probability mass away from boundary correlations 
+(1 or −1).
+
+For the beta regression model, we also estimated a phi parameter with a
+log link function and as a result, the effect of age on the precision on
+the outcome scale is multiplicative. Therefore, we used a weakly
+informative Normal(0, 2) prior.
+
+Any other unspecified priors used brms defaults.
+
+```{r}
+model_stocs_difference_smooth$prior
+
+model_wtocs_difference_smooth$prior 
+```
+
+## Software details
+
+Analyses were conducted in the R programming language [vers. `r v$r`,
+@r-base]. Models were fit using the Stan programming language
+[vers. `r v$stan`,@stan-base] via the brms
+[vers. `r v$brms`,@r-brms] and cmdstanr [vers. `r v$cmdstanr`,
+@r-cmdstanr] R packages. The implementation of smoothing splines relies
+on mgcv [vers. `r v$mgcv`, @mgcv-book]. Handling the posterior samples
+was greatly simplified by tidybayes [vers. `r v$tidybayes`,
+@r-tidybayes] and ggdist [vers. `r v$ggdist`, @ggdist].
+
+Because we rely on reading in cached models, it's important to ask
+the models for their software versions as well:
+
+```{r}
+model_stocs_difference_smooth$version |> 
+  lapply(as.character) |> 
+  str()
+
+model_wtocs_difference_smooth$version |> 
+  lapply(as.character) |> 
+  str()
+```
+
+
+
+## Full Model Summaries
+
+For completeness, here are the full model summaries, but note that these
+are generalized linear models with nonlinear link functions so it is
+difficulty to interpret individual coefficients in isolation. Note also
+that the quantities for the smoothing spline SDs and linear effects from
+each smooth are generally uninterpretable because of several matrix
+transformations. Thus, these models are best understood through the
+expectations or predictions computed from them.
+
+Multiword intelligibility:
+
+```{r}
+summary(model_stocs_difference_smooth, priors = TRUE)
+```
+
+Single word intelligibility:
+
+```{r}
+summary(model_wtocs_difference_smooth, priors = TRUE)
+```
+
+## Modeling functions
+
+The following code block shows the modeling workflow we used to fit
+these models. Each family of models has a single function. A user passes
+in a dataset, a model `flavor`, an optional random number seed and
+optional `tag`. The `flavor` is used to look up the appropriate model
+formula, and the `tag` is used to differentiate two models with
+different datasets but the same flavor.
+
+```{r, include = FALSE}
+source("R/functions.R", keep.source = TRUE)
+print_function <- function(f) {
+  l <- capture.output(print(f, useSource = TRUE))
+  l[1] <- paste0(as.character(substitute(f))," <- ", l[1])
+  c(l, "")
+}
+
+l <- c(
+  print_function(fit_stocs_model), 
+  print_function(fit_wtocs_model),
+  print_function(lookup_brms_priors),
+  print_function(has_random_slope_correlation),
+  print_function(add_loo_criterion),
+  print_function(brm_args)
+)
+```
+
+```{r, code = l}
+```
+
+
+
+## References
+

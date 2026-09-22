@@ -8,6 +8,9 @@ print_duckdb(object, table_limit = 50)
 }
 \arguments{
 \item{object}{a database connection to a duckdb database}
+
+\item{table_limit}{number of table names to print before truncating with
+\code{...}. Defaults to 50.}
 }
 \value{
 \code{NULL} invisibly

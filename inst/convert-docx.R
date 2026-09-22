@@ -1,6 +1,5 @@
 # Convert .docx versions of supplemental materials files to .md
 
-
 convert_one <- function(input_path) {
   output_path <- input_path |>
     tools::file_path_sans_ext() |>
@@ -70,4 +69,5 @@ the R programming language.
 convert_one("vignettes/articles/docx/sm-2025-mahr-intel-rate.docx")
 convert_one("vignettes/articles/docx/sm-2022-long-vss.docx")
 convert_one("vignettes/articles/docx/sm-2021-mahr-aligners.docx")
+convert_one("vignettes/articles/docx/sm-2026-salvo-prolific.docx")
 # pkgdown::build_article("articles/sm-2022-long-vss")
