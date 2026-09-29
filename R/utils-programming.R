@@ -201,3 +201,102 @@ skip_block <- function(...) {
   invisible(NULL)
 }
 
+
+#' Extract a function's source and preceding comments
+#'
+#' `extract_function_source()` returns the original source lines for a function,
+#' including the contiguous block of comment lines immediately above it.
+#' Formatting, indentation, and comments inside the function are preserved.
+#'
+#' @param fun A function with a `srcref` attribute whose `srcfile` contains
+#'   the original source lines. Use `keep.source = TRUE` when calling
+#'   [base::source()] or [base::parse()] to retain this information.
+#'
+#' @return A character vector with one element per source line, starting with
+#'   any immediately preceding comments. An empty string is appended unless the
+#'   last element is already empty, so concatenated results have a blank line
+#'   between functions.
+#'
+#' @details
+#' A comment line starts with `#`, optionally preceded by whitespace. This
+#' includes roxygen comments. A blank line or a line of code ends the preceding
+#' comment block.
+#'
+#' Complete lines are returned, so an assignment such as `f <-` on the same
+#' line as `function` is included, as is any other text on the first or last
+#' line. An assignment on an earlier line is not included.
+#'
+#' This function requires retained source text; it does not reconstruct code
+#' from the function body. Functions without source references, including many
+#' functions from installed packages, cannot be used.
+#'
+#' @section Supplemental materials:
+#' The main use case is printing function definitions later in our supplemental
+#' materials documents. This lets us curate which analysis functions are shown
+#' and their ordering while preserving their original comments and formatting.
+#'
+#' In a knitr document, collect the source in a hidden chunk, then display it
+#' in a later chunk using the `code` option:
+#'
+#' ````text
+#' ```{r, include = FALSE}
+#' # If not already source()-ed:
+#' source("R/functions.R", keep.source = TRUE)
+#' l <- c(
+#'   extract_function_source(some_analysis_function),
+#'   extract_function_source(some_other_analysis_function)
+#' )
+#' ```
+#'
+#' ```{r, code = l}
+#' ```
+#' ````
+#'
+#' @concept programming-utils
+#' @export
+#' @examples
+#' code <- c(
+#'   "# Add one to a number",
+#'   "add_one <- function(x) {",
+#'   "  x + 1",
+#'   "}"
+#' )
+#' env <- new.env()
+#' eval(parse(text = code, keep.source = TRUE), envir = env)
+#' extract_function_source(env$add_one)
+#' writeLines(extract_function_source(env$add_one))
+extract_function_source <- function(fun) {
+  stopifnot("`fun` must be a function" = is.function(fun))
+  ref <- attr(fun, "srcref")
+  if (is.null(ref)) {
+    stop(
+      "`fun` must have a source reference; use `keep.source = TRUE`.",
+      call. = FALSE
+    )
+  }
+  source_lines <- attr(ref, "srcfile") |> getElement("lines")
+  if (is.null(source_lines)) {
+    stop(
+      "The source reference must contain the original source lines.",
+      call. = FALSE
+    )
+  }
+
+  line_range <- ref[c(1, 3)]
+
+  is_comment <- function(x) grepl("^\\s*#", x)
+  line_to_check <- line_range[1]
+
+  repeat {
+    line_to_check <- line_to_check - 1
+    if (line_to_check < 1) break
+    if (!is_comment(source_lines[line_to_check])) break
+  }
+
+  lines <- source_lines[seq(line_to_check + 1, line_range[2])]
+  if (lines[length(lines)] != "") {
+    lines <- c(lines, "")
+  }
+
+  lines
+}

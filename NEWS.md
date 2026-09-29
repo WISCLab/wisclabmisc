@@ -1,6 +1,9 @@
 
 # wisclabmisc 0.1.1.9000 (dev version)
 
+* Added `extract_function_source()` to extract a function's original source lines and
+  immediately preceding comments.
+
 * Suppressed warnings from `sessioninfo::session_info()` in `mem_gamlss()`.
 * Updated regex for `tocs_item()`.
 * Added `compute_overlap_rate()`.
