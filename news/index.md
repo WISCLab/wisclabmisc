@@ -2,33 +2,46 @@
 
 ## wisclabmisc 0.1.1.9000 (dev version)
 
+- Added
+  [`extract_function_source()`](https://wisclab.github.io/wisclabmisc/reference/extract_function_source.md)
+  to extract a function’s original source lines and immediately
+  preceding comments.
+
 - Suppressed warnings from
   [`sessioninfo::session_info()`](https://sessioninfo.r-lib.org/reference/session_info.html)
   in
   [`mem_gamlss()`](https://wisclab.github.io/wisclabmisc/reference/mem_gamlss.md).
+
 - Updated regex for
   [`tocs_item()`](https://wisclab.github.io/wisclabmisc/reference/tocs_item.md).
+
 - Added
   [`compute_overlap_rate()`](https://wisclab.github.io/wisclabmisc/reference/compute_overlap_rate.md).
+
 - Added
   [`compute_sens_spec_from_ecdf()`](https://wisclab.github.io/wisclabmisc/reference/compute_sens_spec_from_ecdf.md)
   to compute sensitivity, specificity and AUC on weighted data.
+
 - Updated
   [`compute_empirical_roc()`](https://wisclab.github.io/wisclabmisc/reference/compute_empirical_roc.md)
   to handle multilevel data (like a rating scale) if the two levels to
   be compared are provided in `levels`.
+
 - Updated
   [`compute_empirical_roc()`](https://wisclab.github.io/wisclabmisc/reference/compute_empirical_roc.md)
   to support aliases for `direction`: `"case-low"`/`"control-high"` and
   `"case-high"`/`"control-low"`. These forms help if you think about the
   direction or comparison as “which group gets a low/high score?”
+
 - Added
   [`skip_block()`](https://wisclab.github.io/wisclabmisc/reference/skip_block.md).
+
 - Added
   [`parse_year_month_age()`](https://wisclab.github.io/wisclabmisc/reference/ages.md)
   and
   [`parse_yymm_age()`](https://wisclab.github.io/wisclabmisc/reference/ages.md)
   to convert formatted ages into age in months.
+
 - Add `audit` objects. These wrap some data and log the results of
   function applications on the underlying data. These are designed for
   validating vectors (e.g., filenames). Functions consist of
@@ -37,10 +50,13 @@
   [`audit_poke()`](https://wisclab.github.io/wisclabmisc/reference/audit.md)
   and
   [`audit_unwrap()`](https://wisclab.github.io/wisclabmisc/reference/audit.md).
+
 - Add `data_tocs_items` as a reusable source of the items used in our
   lab’s listening experiments.
+
 - Add database helpers:
   [`tbl_bind()`](https://wisclab.github.io/wisclabmisc/reference/tbl_bind.md).
+
 - Add file helpers:
   [`dir_sync_down()`](https://wisclab.github.io/wisclabmisc/reference/dir_sync_down.md),
   [`file_rename_with()`](https://wisclab.github.io/wisclabmisc/reference/file_rename_with.md),

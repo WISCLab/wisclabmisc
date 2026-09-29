@@ -85,6 +85,8 @@
   : Compute overlap rate for (phoneme alignment) intervals
 - [`dir_sync_down()`](https://wisclab.github.io/wisclabmisc/reference/dir_sync_down.md)
   : Sync one directory down into another
+- [`extract_function_source()`](https://wisclab.github.io/wisclabmisc/reference/extract_function_source.md)
+  : Extract a function's source and preceding comments
 - [`file_replace_name()`](https://wisclab.github.io/wisclabmisc/reference/file_rename_with.md)
   [`file_rename_with()`](https://wisclab.github.io/wisclabmisc/reference/file_rename_with.md)
   : Rename file basenames using functions

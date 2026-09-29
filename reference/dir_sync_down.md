@@ -104,16 +104,16 @@ writeLines("extra", fs::path(dir_to, "extra.txt"))
 
 # Preview the sync plan without changing files
 plan <- dir_sync_down(dir_from, dir_to)
-#> Dry run: 🔃 Would update /tmp/RtmpZbc9e8/filea3ca71fcdd15
+#> Dry run: 🔃 Would update /tmp/RtmpCmaXbb/file359259f83a88
 #>   1 new file (copy), 2 out-of-sync files (overwrite), 1 extra file (ignore)
 
 # Actually copy and overwrite files, but keep extra destination files
 dir_sync_down(dir_from, dir_to, .dry_run = FALSE)
-#> 🔃 Updating /tmp/RtmpZbc9e8/filea3ca71fcdd15
+#> 🔃 Updating /tmp/RtmpCmaXbb/file359259f83a88
 #>   1 new file (copy), 2 out-of-sync files (overwrite), 1 extra file (ignore)
 
 # Also delete extra destination files
 dir_sync_down(dir_from, dir_to, .dry_run = FALSE, .delete = TRUE)
-#> 🔃 Updating /tmp/RtmpZbc9e8/filea3ca71fcdd15
+#> 🔃 Updating /tmp/RtmpCmaXbb/file359259f83a88
 #>   0 new files (copy), 3 out-of-sync files (overwrite), 1 extra file (delete)
 ```

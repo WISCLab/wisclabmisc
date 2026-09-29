@@ -49,7 +49,7 @@ library(dplyr)
 db <- duckdb::duckdb() |>
   DBI::dbConnect()
 #> duckdb keeps downloaded extensions and secrets in a temporary directory:
-#> ℹ /tmp/RtmpZbc9e8/duckdb
+#> ℹ /tmp/RtmpCmaXbb/duckdb
 #> This is removed when the R session ends.
 #> • Extensions are re-downloaded each session.
 #> • Secrets are lost.
@@ -57,7 +57,7 @@ db <- duckdb::duckdb() |>
 #> ℹ Run duckdb(shared_home = FALSE) to accept the temporary directory (and silence this message).
 #> ℹ See ?duckdb_storage for details and alternatives.
 db
-#> <duckdb_connection 5e1a0 driver=<duckdb_driver dbdir=':memory:' read_only=FALSE bigint=numeric>>
+#> <duckdb_connection a3c80 driver=<duckdb_driver dbdir=':memory:' read_only=FALSE bigint=numeric>>
 
 DBI::dbWriteTable(db, "mtcars_g1", mtcars[mtcars$cyl == 4, ])
 DBI::dbWriteTable(db, "mtcars_g2", mtcars[mtcars$cyl == 6, ])
@@ -72,12 +72,12 @@ r <- db |>
   count(.source)
 r
 #> # A query:  ?? x 2
-#> # Database: DuckDB 1.5.5 [unknown@Linux 6.17.0-1022-azure:R 4.6.1/:memory:]
+#> # Database: DuckDB 1.5.6 [unknown@Linux 6.17.0-1022-azure:R 4.6.1/:memory:]
 #>   .source       n
 #>   <chr>     <dbl>
-#> 1 mtcars_g2     7
-#> 2 mtcars_g3    14
-#> 3 mtcars_g1    11
+#> 1 mtcars_g3    14
+#> 2 mtcars_g1    11
+#> 3 mtcars_g2     7
 
 # the query is several UNIONs
 show_query(r)
